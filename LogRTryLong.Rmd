@@ -134,6 +134,17 @@ ggplot(LogDS, aes(cruralcat)) +
   geom_bar()
 ```
 
+Correlation Matrix among Numerical Data
+
+```{r Corrplot for Numerical Data}
+LogDSNum <- LogDS %>%
+  select_if(is.numeric)
+CorLogDSNum <- cor(LogDS_Num, use = "complete.obs", method = "pearson")
+kable(round(CorLogDSNum,2))
+```
+
+
+
 # Logistic Regression Modelling
 
 ## Univariable - Simple Logistic Regression
@@ -239,17 +250,29 @@ kable(tidy(confint(Model01)))
 
 the confident interval didn't cross 1
 
-### Inference - Likelihood Ratio Test
+## Inference - Likelihood Ratio Test
 
-Compare Model01 with Model11
+### LR Test fot Model01 with Model11
 
 - Model01 - age as covariate
 - Model11 - age and gender as covariate
 
-to explore LR when gender is added
+to explore LR when gender is added to Model01
 
 ```{r LR test}
 anova(Model11, Model01, test="Chisq")
 ```
 
+### LR Test fot Model02 with Model11
+
+- Model02 - gender as covariate
+- Model11 - age and gender as covariate
+
+to explore LR when age is added to Mofrl02
+
+```{r LR test}
+anova(Model11, Model02, test="Chisq")
+```
+
+## Model Selection
 

@@ -17,6 +17,7 @@ library(psych)
 library(ggplot2)
 library(dplyr)
 library(broom)
+library(corrplot)
 ```
 
 ## Dataset
@@ -137,10 +138,11 @@ ggplot(LogDS, aes(cruralcat)) +
 Correlation Matrix among Numerical Data
 
 ```{r Corrplot for Numerical Data}
-LogDSNum <- LogDS %>%
+LogDS_Num <- LogDS %>%
   select_if(is.numeric)
-CorLogDSNum <- cor(LogDS_Num, use = "complete.obs", method = "pearson")
-kable(round(CorLogDSNum,2))
+Cor_LogDS_Num <- cor(LogDS_Num, use = "complete.obs", method = "pearson")
+kable(round(Cor_LogDS_Num,2))
+corrplot(Cor_LogDS_Num)
 ```
 
 
@@ -259,7 +261,7 @@ the confident interval didn't cross 1
 
 to explore LR when gender is added to Model01
 
-```{r LR test}
+```{r LR test CoV gender}
 anova(Model11, Model01, test="Chisq")
 ```
 
@@ -270,9 +272,30 @@ anova(Model11, Model01, test="Chisq")
 
 to explore LR when age is added to Mofrl02
 
-```{r LR test}
+```{r LR test CoV age}
 anova(Model11, Model02, test="Chisq")
 ```
 
 ## Model Selection
+
+### Explore Univariable
+
+```{r}
+SLogMod_AgeBPSugar <- LogDS %>%
+  select(age, msbpr, mdbpr, fbs, mogtt2h, hdl) %>%
+  purrr::map(~glm(dmdxcat ~ .x,
+                  family = binomial,
+                  data = LogDS)) %>%
+  purrr::map(tidy) %>%
+  bind_rows()
+ResultSLogMod01 <- SLogMod_AgeBPSugar %>%
+  mutate(model = c("b0", "age",
+                   "b0", "msbpr",
+                   "b0", "mdbpt",
+                   "b0", "fbs",
+                   "b0", "mogtt2h",
+                   "b0", "hdl")) %>%
+  select(model, everything())
+kable(ResultSLogMod01)
+```
 

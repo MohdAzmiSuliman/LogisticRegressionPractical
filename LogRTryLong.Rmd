@@ -48,7 +48,7 @@ describe(LogDS)
 
 ## Data Visualization
 
-Histogram
+Histogram for numerical data
 
 ```{r Historgram numerical}
 ggplot(LogDS, aes(age)) +
@@ -111,5 +111,15 @@ ggplot(LogDS, aes(ldl)) +
                             sd = sd(LogDS$ldl)))
 ```
 
+Bar chart for categorical data
+
+```{r Barchart categorical}
+ggplot(LogDS, aes(dmdx2)) +
+  geom_bar()
+ggplot(LogDS, aes(gender2)) +
+  geom_bar()
+ggplot(LogDS, aes(crural2)) +
+  geom_bar()
+```
 
 

@@ -1,0 +1,40 @@
+---
+title: "LogisticRegressionPractical"
+output: html_document
+---
+
+# Pre-amble
+
+## Library
+
+```{r Library}
+library(haven)
+library(psych)
+library(knitr)
+```
+
+## Import dataset
+
+Import dataset
+
+```{r Import Dataset}
+DiabetesDS <- read_dta("diabetes.dta")
+kable(head(DiabetesDS))
+```
+
+There is three variables with categorical data, but recorded as numerical.  
+
+Need to convert categorical data
+
+```{r Convert Categorical Data}
+DiabetesDS$dmdx2 <- as_factor(DiabetesDS$dmdx)
+DiabetesDS$gender2 <- as_factor(DiabetesDS$gender)
+DiabetesDS$crural2 <- as_factor(DiabetesDS$crural)
+```
+
+View updated dataset
+
+```{r View Dataset}
+kable(summary(DiabetesDS [, 20:22]))
+kable(describe(DiabetesDS))
+```

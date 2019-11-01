@@ -291,11 +291,94 @@ SLogMod_AgeBPSugar <- LogDS %>%
 ResultSLogMod01 <- SLogMod_AgeBPSugar %>%
   mutate(model = c("b0", "age",
                    "b0", "msbpr",
-                   "b0", "mdbpt",
+                   "b0", "mdbpr",
                    "b0", "fbs",
                    "b0", "mogtt2h",
                    "b0", "hdl")) %>%
   select(model, everything())
 kable(ResultSLogMod01)
 ```
+
+### Explore Multicollinearity & Confounder
+
+Correlation Matrix
+
+Correlation Matrix among msbp, dbp, fbs & mogtt2h
+
+```{r Corrplot for BP and Sugar}
+LogDS_BPSugar <- LogDS %>%
+  select("msbpr", "mdbpr", "fbs", "mogtt2h")
+Cor_LogDS_BPSugar <- cor(LogDS_BPSugar, use = "complete.obs", method = "pearson")
+kable(round(Cor_LogDS_BPSugar,2))
+corrplot(Cor_LogDS_BPSugar)
+pairs(LogDS_BPSugar)
+```
+
+### Model21 - age, msbp, fbs, hdl
+
+```{r Model21}
+Model21 <- glm(dmdxcat ~ age + msbpr + fbs + hdl,
+               family = binomial(link = "logit"),
+               data = LogDS)
+summary(Model21)
+kable(tidy(Model21))
+```
+
+sbp not significant
+
+### Model22 - age, dbp, fbs, hdl
+
+```{r Model22}
+Model22 <- glm(dmdxcat ~ age + mdbpr + fbs + hdl,
+               family = binomial(link = "logit"),
+               data = LogDS)
+summary(Model22)
+kable(tidy(Model22))
+```
+
+dbp significant
+
+### Model32 - age, dbp, fbs, hdl, mogtt
+
+```{r Model32}
+Model32 <- glm(dmdxcat ~ age + mdbpr + fbs + hdl + mogtt2h,
+               family = binomial(link = "logit"),
+               data = LogDS)
+summary(Model32)
+kable(tidy(Model32))
+```
+
+mogtt as confounder?
+
+#### Confounder fbs
+
+Model22 - age, dbp, fbs, hdl
+
+```{r Confounder fbs}
+Model22_01 <- tidy(Model22)
+Model32_01 <- tidy(Model32)
+((Model32_01[2,2] - Model22_01[2,2])/Model22_01[2,2])*100
+```
+
+#### Confounder mogtt
+
+Model23 - age, dbp, mogtt, hdl
+
+```{r Model23}
+Model23 <- glm(dmdxcat ~ age + mdbpr + mogtt2h + hdl,
+               family = binomial(link = "logit"),
+               data = LogDS)
+Model23_01 <- tidy(Model23)
+((Model32_01[2,2]-Model23_01[2,2])/Model23_01[2,2])*100
+```
+
+mogtt has higher changes, thus mogtt selected as compared to fbs
+
+### Model23 - age, dbp, mogtt, hdl
+
+```{r rerun Model23}
+summary(Model23)
+kable(tidy(Model23))
+```
+
 

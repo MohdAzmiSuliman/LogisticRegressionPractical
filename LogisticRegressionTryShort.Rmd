@@ -1,5 +1,5 @@
 ---
-title: "LogisticRegressionPractical"
+title: "LogisticRegressionPractical - Short"
 output: html_document
 ---
 
@@ -35,7 +35,7 @@ DiabetesDS$crural2 <- as_factor(DiabetesDS$crural)
 
 View updated dataset
 
-```{r View Dataset}
+```{r View Dataset, message=F}
 kable(summary(DiabetesDS [, 20:22]))
 kable(describe(DiabetesDS))
 ```
@@ -109,7 +109,7 @@ find CI for Model11
 - outcome: DM Status
 - predictor: age (numerical) & gender (categorical)
 
-```{r CI Model11}
+```{r CI Model11, message=F}
 kable(confint(Model11))
 ```
 
@@ -117,10 +117,33 @@ kable(confint(Model11))
 
 Calculate OR and 95% CI for OR
 
-```{r OR & CI OR}
+```{r OR & CI OR, message=F}
 Table_Model11 <- tidy(Model11)
 OR_Model11 <- exp(coefficients(Model11))
 ORCI_Model11 <- exp(confint(Model11))
 kable(cbind(Table_Model11, OR_Model11, ORCI_Model11))
+```
+
+
+## Prediction
+
+Calculate predicted value for Model11
+
+```{r Log Odd Prediction Model11}
+pred_logoddModel11 <- predict(Model11, type = "link")
+kable(head(pred_logoddModel11))
+```
+
+Calculate predicted probability for Model11
+```{r Probability Prediction Model11}
+pred_probModel11 <- predict(Model11, type = "response")
+kable(head(pred_probModel11))
+```
+
+Combine Predicted Log Odds and Predicted Probability into new dataset
+
+```{r combine calculated prediction}
+DiabetesDS02 <- cbind(DiabetesDS [c("age","gender2")], pred_logoddModel11, pred_probModel11)
+kable(head(DiabetesDS02))
 ```
 

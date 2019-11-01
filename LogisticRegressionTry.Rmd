@@ -11,6 +11,7 @@ output: html_document
 library(haven)
 library(psych)
 library(knitr)
+library(broom)
 ```
 
 ## Import dataset
@@ -38,3 +39,88 @@ View updated dataset
 kable(summary(DiabetesDS [, 20:22]))
 kable(describe(DiabetesDS))
 ```
+
+# Logistic Regression Modelling
+
+## Simple Logistic Regression
+
+### Model01 - age
+
+Model01
+
+- Outcome: Diabetes Status (dmdx2)
+- predictor: age (numerical)
+
+```{r SLogR age}
+Model01 <- glm(dmdx2 ~ age, family = binomial(link = 'logit'),
+               data = DiabetesDS)
+summary(Model01)
+kable(tidy(Model01))
+```
+
+### Model02 - gender
+
+Model02
+
+- outcome: DM status
+- predictor: gender
+
+```{r SLogR gender}
+Model02 <- glm(dmdx2 ~ gender2, family = binomial(link = "logit"),
+               data = DiabetesDS)
+summary(Model02)
+kable(tidy(Model02))
+```
+
+## Multiple Logistic Regression
+
+### Model11 - age & gender
+
+Model11
+
+- outcome: DM Status
+- predictor: age (numerical) & gender (categorical)
+
+```{r MLogR Age & Gender}
+Model11 <- glm(dmdx2 ~ age + gender2, family = binomial(link = "logit"),
+               data = DiabetesDS)
+summary(Model11)
+kable(tidy(Model11))
+```
+
+### Model12 - age, gender & interaction
+
+Model12
+
+- outcome: DM Status
+- predictor: age, gender, age*gender interaction term
+
+```{r MLogR Age Gender & Age*Gender}
+Model12 <- glm(dmdx2 ~ age + gender2 + age:gender2, family = binomial(link = "logit"),
+               data = DiabetesDS)
+summary(Model12)
+kable(tidy(Model12))
+```
+
+## Confidence Interval
+
+find CI for Model11
+
+- outcome: DM Status
+- predictor: age (numerical) & gender (categorical)
+
+```{r CI Model11}
+kable(confint(Model11))
+```
+
+## Odd Ratio
+
+Calculate OR and 95% CI for OR
+
+```{r OR & CI OR}
+Table_Model11 <- tidy(Model11)
+OR_Model11 <- exp(coefficients(Model11))
+ORCI_Model11 <- exp(confint(Model11))
+kable(cbind(Table_Model11, OR_Model11, ORCI_Model11))
+```
+

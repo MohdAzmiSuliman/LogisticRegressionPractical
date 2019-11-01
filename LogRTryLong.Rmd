@@ -1,0 +1,115 @@
+---
+title: "LoGRTryLong"
+author: "Mohd Azmi"
+date: "01/11/2019"
+output: html_document
+---
+
+# Pre-amble
+
+## Library
+
+```{r Library, message=F}
+library(haven)
+library(knitr)
+library(tidyr)
+library(psych)
+library(ggplot2)
+```
+
+## Dataset
+
+Import dataset
+
+```{r Import Dataset}
+LogDS <- read_dta("diabetes.dta")
+```
+
+Convert categorical data
+
+```{r Convert Categorical Data}
+```
+
+
+```{r Convert Categorical Data}
+LogDS$dmdx2 <- as_factor(LogDS$dmdx)
+LogDS$gender2 <- as_factor(LogDS$gender)
+LogDS$crural2 <- as_factor(LogDS$crural)
+```
+
+# Data Exploration
+
+## Data summary
+
+```{r Data Summary, message=F}
+summary(LogDS)
+describe(LogDS)
+```
+
+## Data Visualization
+
+Histogram
+
+```{r Historgram numerical}
+ggplot(LogDS, aes(age)) +
+  geom_histogram(aes(y=..density..)) +
+  stat_function(fun = dnorm, colour = "red",
+                args = list(mean = mean(LogDS$age),
+                            sd = sd(LogDS$age)))
+ggplot(LogDS, aes(height)) +
+  geom_histogram(aes(y=..density..)) +
+  stat_function(fun = dnorm, colour = "red",
+                args = list(mean = mean(LogDS$height),
+                            sd = sd(LogDS$height)))
+
+ggplot(LogDS, aes(weight)) +
+  geom_histogram(aes(y=..density..)) +
+  stat_function(fun = dnorm, colour = "red",
+                args = list(mean = mean(LogDS$weight),
+                            sd = sd(LogDS$weight)))
+
+ggplot(LogDS, aes(hba1c)) +
+  geom_histogram(aes(y=..density..)) +
+  stat_function(fun = dnorm, colour = "red",
+                args = list(mean = mean(LogDS$hba1c),
+                            sd = sd(LogDS$hba1c)))
+
+ggplot(LogDS, aes(fbs)) +
+  geom_histogram(aes(y=..density..)) +
+  stat_function(fun = dnorm, colour = "red",
+                args = list(mean = mean(LogDS$fbs),
+                            sd = sd(LogDS$fbs)))
+
+ggplot(LogDS, aes(mogtt2h)) +
+  geom_histogram(aes(y=..density..)) +
+  stat_function(fun = dnorm, colour = "red",
+                args = list(mean = mean(LogDS$mogtt2h),
+                            sd = sd(LogDS$mogtt2h)))
+
+ggplot(LogDS, aes(totchol)) +
+  geom_histogram(aes(y=..density..)) +
+  stat_function(fun = dnorm, colour = "red",
+                args = list(mean = mean(LogDS$totchol),
+                            sd = sd(LogDS$totchol)))
+
+ggplot(LogDS, aes(ftrigliz)) +
+  geom_histogram(aes(y=..density..)) +
+  stat_function(fun = dnorm, colour = "red",
+                args = list(mean = mean(LogDS$ftrigliz),
+                            sd = sd(LogDS$ftrigliz)))
+
+ggplot(LogDS, aes(hdl)) +
+  geom_histogram(aes(y=..density..)) +
+  stat_function(fun = dnorm, colour = "red",
+                args = list(mean = mean(LogDS$hdl),
+                            sd = sd(LogDS$hdl)))
+
+ggplot(LogDS, aes(ldl)) +
+  geom_histogram(aes(y=..density..)) +
+  stat_function(fun = dnorm, colour = "red",
+                args = list(mean = mean(LogDS$ldl),
+                            sd = sd(LogDS$ldl)))
+```
+
+
+

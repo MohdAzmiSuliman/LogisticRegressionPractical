@@ -2,7 +2,11 @@
 title: "LoGRTryLong"
 author: "Mohd Azmi"
 date: "01/11/2019"
-output: html_document
+output: 
+  html_document:
+    toc: yes
+    toc_float:
+      collapsed: no
 ---
 
 # Pre-amble
@@ -286,7 +290,7 @@ anova(Model11, Model02, test="Chisq")
 
 ```{r}
 SLogMod_AgeBPSugar <- LogDS %>%
-  select(age, msbpr, mdbpr, fbs, mogtt2h, hdl) %>%
+  dplyr::select(age, msbpr, mdbpr, fbs, mogtt2h, hdl) %>%
   purrr::map(~glm(dmdxcat ~ .x,
                   family = binomial,
                   data = LogDS)) %>%
@@ -299,7 +303,7 @@ ResultSLogMod01 <- SLogMod_AgeBPSugar %>%
                    "b0", "fbs",
                    "b0", "mogtt2h",
                    "b0", "hdl")) %>%
-  select(model, everything())
+  dplyr::select(model, everything())
 kable(ResultSLogMod01)
 ```
 
@@ -311,7 +315,7 @@ Correlation Matrix among msbp, dbp, fbs & mogtt2h
 
 ```{r Corrplot for BP and Sugar}
 LogDS_BPSugar <- LogDS %>%
-  select("msbpr", "mdbpr", "fbs", "mogtt2h")
+  dplyr::select("msbpr", "mdbpr", "fbs", "mogtt2h")
 Cor_LogDS_BPSugar <- cor(LogDS_BPSugar, use = "complete.obs", method = "pearson")
 kable(round(Cor_LogDS_BPSugar,2))
 corrplot(Cor_LogDS_BPSugar)
@@ -396,7 +400,7 @@ Simple Logistic Regression for each covariates
 
 ```{r SLogR Mode41}
 SLogR_Model41 <- LogDS %>%
-  select(age, mdbpr, fbs, gendercat) %>%
+  dplyr::select(age, mdbpr, fbs, gendercat) %>%
   purrr::map(~glm(dmdxcat ~ .x,
                   family = binomial,
                   data = LogDS)) %>%
@@ -407,7 +411,7 @@ ResultSLogRMod41 <- SLogR_Model41 %>%
                    "b0", "mdbpr",
                    "b0", "fbs",
                    "b0", "gendercat")) %>%
-  select(model, everything())
+  dplyr::select(model, everything())
 kable(ResultSLogRMod41)
 ```
 

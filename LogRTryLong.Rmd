@@ -18,6 +18,10 @@ library(ggplot2)
 library(dplyr)
 library(broom)
 library(corrplot)
+library(mfp)
+library(generalhoslem)
+library(ResourceSelection)
+library(LogisticDx)
 ```
 
 ## Dataset
@@ -386,20 +390,168 @@ kable(tidy(Model23))
 Preliminary Main Effect Model - Model41
 
 - outcome: dm
-- covariate: age, dbp, mogtt, gender
+- covariate: age, dbp, fbs, gender
 
-```{r Mode41}
+Simple Logistic Regression for each covariates
+
+```{r SLogR Mode41}
 SLogR_Model41 <- LogDS %>%
-  select(age, mdbpr, mogtt2h, gendercat) %>%
+  select(age, mdbpr, fbs, gendercat) %>%
   purrr::map(~glm(dmdxcat ~ .x,
                   family = binomial,
-                  data = LogDSfa %>%
-  purrr::map(tidy) %>%m  bind_rows
+                  data = LogDS)) %>%
+  purrr::map(tidy) %>%  bind_rows()
+
 ResultSLogRMod41 <- SLogR_Model41 %>%
-  mutate()
-ily))
+  mutate(model = c("b0", "age",
+                   "b0", "mdbpr",
+                   "b0", "fbs",
+                   "b0", "gendercat")) %>%
+  select(model, everything())
+kable(ResultSLogRMod41)
 ```
 
+Multiple Logistic Regression
+
+```{r MLogR Model41}
+Model41 <- glm(dmdxcat ~ age + mdbpr + fbs + gendercat,
+               family = binomial(link = "logit"),
+               data = LogDS)
+summary(Model41)
+kable(tidy(Model41))
+```
+
+
+#### Interaction 1 - age:dbp
+
+Interaction 1 - age:dbp
+
+- covariate: age, dbp, fbs, gender, age:dbp
+
+```{r Interaction age:dbp}
+Model41_Int01 <- glm(dmdxcat ~ age + mdbpr + fbs + gendercat + age:mdbpr,
+                     family = binomial(link = "logit"),
+                     data = LogDS)
+summary(Model41_Int01)
+kable(tidy(Model41_Int01))
+```
+
+interaction term not significant
+
+#### Interaction 2 - age:fbs
+
+- covariate: age, dbp, fbs, gender, age:fbs
+
+```{r Interaction age:fbs}
+Model41_Int02 <- glm(dmdxcat ~ age + mdbpr + fbs + gendercat + age:fbs,
+                     family = binomial(link = "logit"),
+                     data = LogDS)
+summary(Model41_Int02)
+kable(tidy(Model41_Int02))
+```
+
+interaction term not significant
+
+#### Interaction 3 - age:gender
+
+- covariate: age, dbp, fbs, gender, age:gender
+
+```{r Interaction age:gender}
+Model41_Int03 <- glm(dmdxcat ~ age + mdbpr + fbs + gendercat + age:gendercat,
+                     family = binomial(link = "logit"),
+                     data = LogDS)
+summary(Model41_Int03)
+kable(tidy(Model41_Int03))
+```
+
+interaction term not significant
+
+#### Interaction 4 - dbp:fbs
+
+- covariate: age, dbp, fbs, gender, dbp:fbs
+
+```{r Interaction dbp:fbs}
+Model41_Int04 <- glm(dmdxcat ~ age + mdbpr + fbs + gendercat + mdbpr:fbs,
+                     family = binomial(link = "logit"),
+                     data = LogDS)
+summary(Model41_Int04)
+kable(tidy(Model41_Int04))
+```
+
+interaction term is significant
+
+#### Interaction 5 - dbp:gender
+
+- covariate: age, dbp, fbs, gender, dbp:gender
+
+```{r Interaction dbp:gender}
+Model41_Int05 <- glm(dmdxcat ~ age + mdbpr + fbs + gendercat + mdbpr:gendercat,
+                     family = binomial(link = "logit"),
+                     data = LogDS)
+summary(Model41_Int05)
+kable(tidy(Model41_Int05))
+```
+
+interaction is not significant
+
+#### Interaction 6 - fbs:gender
+
+- covariate: age, dbp, fbs, gender, fbs:gender
+
+```{r Interaction fbs:gender}
+Model41_Int06 <- glm(dmdxcat ~ age + mdbpr + fbs + gendercat + fbs:gendercat,
+                     family = binomial(link = "logit"),
+                     data = LogDS)
+summary(Model41_Int06)
+kable(tidy(Model41_Int06))
+```
+
+no interaction
+
+### Prelim Final Model
+
+Preliminary Final Model
+
+- outcome: dm
+- predictor: age, dbp, fbs, gender, dbp:fbs
+
+```{r}
+PrelimFInalModel <- Model41_Int04
+summary(PrelimFInalModel)
+kable(tidy(PrelimFInalModel))
+```
+
+
+## Model Checking
+
+### Hosmer Lemeshow Test
+
+```{r HL test for Prelim Final Model}
+#logitgof(LogDS$dmdxcat, fitted(PrelimFInalModel), g = 10)
+#hoslem.test(LogDS$dmdxcat, fitted(PrelimFInalModel), g = 10)
+HLT_PrelimModel <- dx(PrelimFInalModel, byCov = T)
+kable(tail(HLT_PrelimModel))
+```
+
+### Diagnostic Plot
+
+```{r}
+plot(PrelimFInalModel)
+```
+
+### ROC Curve
+
+```{r}
+#gof_PrelimModel <- gof(PrelimFInalModel, plotROC = T)
+#gof_PrelimModel
+#gof_PrelimModel$auc
+```
+
+
+
+
+
+## Linearity in Logit
 
 
 

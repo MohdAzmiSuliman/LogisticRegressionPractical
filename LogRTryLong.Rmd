@@ -381,4 +381,33 @@ summary(Model23)
 kable(tidy(Model23))
 ```
 
+### Explore Interaction
+
+Preliminary Main Effect Model - Model41
+
+- outcome: dm
+- covariate: age, dbp, mogtt, gender
+
+```{r Mode41}
+SLogR_Model41 <- LogDS %>%
+  select(age, mdbpr, mogtt2h, gendercat) %>%
+  purrr::map(~glm(dmdxcat ~ .x,
+                  family = binomial,
+                  data = LogDSfa %>%
+  purrr::map(tidy) %>%m  bind_rows
+ResultSLogRMod41 <- SLogR_Model41 %>%
+  mutate()
+ily))
+```
+
+
+
+
+
+
+
+
+
+
+
 

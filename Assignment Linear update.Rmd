@@ -1,0 +1,694 @@
+---
+title: "Liner Regression Assignment"
+author: "Muhammad Zikri bin Ab Aziz"
+date: "10/23/2019"
+output: html_document
+---
+
+## Study Objective
+
+This study aimed to predict the factors contribute to Family Stressor Score among staff nurse in Hospital C
+
+**Outcome**: Family Stressor Score
+
+**Covariate**: Age, Gender, Type of Ward, Personal Burnout Score, Work Burnout Score, Client Burnout Score
+
+## Introduction
+
+Data set used in this assignment is burnout score data. The researcher want to study how burnout score and other factors lead to high stress level among staff nurse in Hospital C
+
+### Package activation used in the analysis
+
+```{r}
+library(foreign)
+library(psych)
+library(knitr)
+library(broom)
+library(MASS)
+library(tidyverse)
+library(tidyr)
+library(corrplot)
+library(haven)
+library(ggplot2)
+```
+
+## Entering Dataset
+
+```{r}
+
+data1<-read_sav('burnout stressor_1.sav')
+summary(data1)
+```
+
+
+BMI data was not available in the dataset. The researcher want to convert height and weight to Bmi variable to be used in the analysis.
+
+### Adding BMI variable
+
+```{r}
+data2<-(data1%>%mutate(Bmi=Weight/(Height/100)^2))
+describe(data2)
+```
+
+## Descriptive Statistic
+
+Summary of Data1 (Bmi not included in this dataset)
+
+
+```{r}
+summary(data1)
+```
+
+In this dataset, there are 9 set of variables and 300 observations.No missing value. All variables are in numerical value except gender in categorical value. 
+
+
+## Data Exploration and data wrangling
+
+### Histogram
+
+```{r}
+ggplot(data2,aes(Age))+geom_histogram()
+ggplot(data2,aes(Weight))+geom_histogram()
+ggplot(data2,aes(Height))+geom_histogram()
+ggplot(data2,aes(PersonalBS))+geom_histogram()
+ggplot(data2,aes(WorkBS))+geom_histogram()
+ggplot(data2,aes(ClientBS))+geom_histogram()
+ggplot(data2,aes(FamilySS))+geom_histogram()
+ggplot(data2,aes(Bmi))+geom_histogram()
+
+```
+
+## Correlation Matrix
+
+Researcher want to study correlation between covariates in the study by doing correlation matrix and correlogram
+
+```{r}
+data3<-data2%>%select_if(is.numeric)
+cordata3<-cor(data3,use="complete.obs",method="pearson")
+head(round(cordata3,2))
+```
+
+### corrplot
+
+```{r}
+corrplot(cordata3,method="circle")
+```
+
+**there is no significant correlation between covariates presented in the correlation matrix and correlogram**
+
+## Statistical Analysis
+### Univariable analysis - Linear Regression
+
+Researcher used linear regression to predict factors contribute to Family Stressor Score
+
+Assumptions in linear regression includes:
+1. Independant Variables are non random
+2. For each set of Independant Variables values, there is a subpopulation of Dependant Variable which are normally distributed.
+3. The variance of subpopulation of dependant variable are all equal
+4. The Independant variable value are independant of each other.
+
+All assumption are met.
+
+## Univariable Regression Analysis
+
+Univariable regression analysis is done for all covariate by using simple linear regression
+
+### model 1.1
+**Association of Family Stressor Score with Age**
+
+outcome : Family Stressor Score
+
+covariate : Age
+
+```{r}
+modelAge1.1<-lm(FamilySS~Age, data2)
+summary(modelAge1.1)
+tidy(modelAge1.1,conf.int = T)
+```
+
+### model 1.2
+**Association of Family Stressor Score with Gender**
+
+Outcome : family stressor score
+
+covariate : Gender
+
+```{r}
+modelGender1.2<-lm(FamilySS~Gender, data2)
+summary(modelGender1.2)
+tidy(modelGender1.2,conf.int = T)
+```
+
+
+### model 1.3
+**Association of Family Stressor Score with Types of Ward**
+
+
+outcome : Family Stressor Score
+
+covariate : Types of Ward
+
+```{r}
+modelWard1.3<-lm(FamilySS~Ward, data2)
+summary(modelWard1.3)
+tidy(modelWard1.3,conf.int = T)
+```
+
+### model 1.4
+**Association of Family Stressor Score with Personal Burnout Score**
+
+outcome : Family Stressor Score
+
+covariate : Personal Burnout Score
+
+```{r}
+modelPersonalBS1.4<-lm(FamilySS~PersonalBS, data2)
+summary(modelPersonalBS1.4)
+tidy(modelPersonalBS1.4,conf.int = T)
+```
+
+### model 1.5
+**Association of Family Stressor Score with Work Burnout Score**
+
+outcome : Family Stressor Score
+
+covariate : Work Burnout Score
+
+```{r}
+modelWorkBS1.5<-lm(FamilySS~WorkBS, data2)
+summary(modelWorkBS1.5)
+tidy(modelWorkBS1.5,conf.int = T)
+```
+
+### model 1.6
+**Association of Family Stressor Score with Client Burnout Score**
+
+outcome : Family Stressor Score
+
+covariate : Client Burnout Score
+
+```{r}
+modelClientBS1.6<-lm(FamilySS~ClientBS, data2)
+summary(modelClientBS1.6)
+tidy(modelClientBS1.6,conf.int = T)
+```
+
+### Model 1.7
+**Association of Family Stressor Score with Bmi**
+
+outcome : Family Stressor Score
+
+covariate : Bmi
+
+```{r}
+modelBmi1.7<-lm(FamilySS~Bmi, data2)
+summary(modelBmi1.7)
+tidy(modelBmi1.7,conf.int = T)
+```
+
+
+
+### Univariable Analysis FInding
+
+**Based from univariable regression analysis, we found out that 3 covariate are significantly associate with Family Stressor Score which are Personal Burnout Score, WOrk Burnout Score, and Client Burnout Score. This will be considered in variable selection for modelling later**
+
+Another variables (Age, Gender, BMI,Types of Ward) found to be not significant
+
+As the association is not adjusted for other covariates, researcher will proceed with multivariable analysis to adjust the covariates.
+
+## Multivariable analysis
+
+The aim of multivariable regression is to establish the model and explain & predict the relationship between independant variable (Family Stressor Score) with associated factors (covariates). The model should be statistically sound, simple and makes sense.
+
+### model2.1
+
+Outcome : Family Stressor Score
+
+Covariate : Personal Burnout Score,Work Burnout Score, Client Burnout Score
+
+**this model contain covariates that are significantly associated with Family Stressor Score in univariable regression analysis**
+
+```{r}
+model2.1<-lm(FamilySS~PersonalBS+WorkBS+ClientBS, data = data2)
+summary(model2.1)
+tidy(model2.1, conf.int = T)
+```
+
+
+### model2.2
+
+Outcome : Family Stressor Score
+
+Covariate : Personal Burnout Score,Work Burnout Score, Client Burnout Score, Age, Gender, Types of Ward, Bmi
+
+```{r}
+model2.2<-lm(FamilySS~PersonalBS+WorkBS+ClientBS+Age+Gender+Ward+Bmi, data = data2)
+summary(model2.2)
+tidy(model2.2, conf.int = T)
+```
+
+### model2.3
+
+Outcome : Family Stressor Score
+
+Covariate : Personal Burnout Score,Work Burnout Score, Client Burnout Score, Age, Gender, Bmi
+
+```{r}
+model2.3<-lm(FamilySS~PersonalBS+WorkBS+ClientBS+Age+Gender+Bmi, data = data2)
+summary(model2.3)
+tidy(model2.3, conf.int = T)
+```
+
+## Model Comparison
+
+```{r}
+anova(model2.1,model2.3)
+anova(model2.1,model2.2)
+anova(model2.3,model2.2)
+```
+
+**There is significant different between model2.1 and model2.3. model 2.3 was selected for preliminary model in view of higher adjusted R-squared which is 0.486**
+
+
+## preliminary Model
+
+```{r}
+prelim<-lm(FamilySS~PersonalBS+WorkBS+ClientBS+Age+Gender+Bmi, data=data2)
+summary(prelim)
+```
+
+This is our Prelim Model
+
+## identifying interaction
+
+All possible interaction between the covariate is checked by adding the interaction term in the preliminary final model
+
+### model 3.1
+
+Outcome : Family Stressor Score
+
+Covariate : Personal Burnout Score, Work Burnout Score, Client Burnout Score, Age, Gender, Bmi
+
+interaction Work Burnout Score and Client Burnout Score
+
+```{r}
+model3.1<-lm(FamilySS~PersonalBS+WorkBS+ClientBS+Age+Gender+Bmi+WorkBS*ClientBS, data=data2)
+summary(model3.1)
+```
+
+No interaction(p>0.05)
+
+### model 3.2
+
+Outcome : Family Stressor Score
+
+COvariate : Personal Burnout Score, Work Burnout Score, Client Burnout Score, Age, Gender, Bmi
+
+interaction Work Burnout Score and Personal Burnout Score
+
+```{r}
+model3.2<-lm(FamilySS~PersonalBS+WorkBS+ClientBS+Age+Gender+Bmi+WorkBS*PersonalBS, data=data2)
+summary(model3.2)
+```
+
+No significant interaction (p>0.05)
+
+### model 3.3
+
+Outcome : Family Stressor Score
+
+COvariate : Personal Burnout Score, Work Burnout Score, Client Burnout Score, Age, Gender, Bmi
+
+interaction Work Burnout Score and Age
+
+```{r}
+model3.3<-lm(FamilySS~PersonalBS+WorkBS+ClientBS+Age+Gender+Bmi+WorkBS*Age, data=data2)
+summary(model3.3)
+```
+
+No significant interaction (p>0.05)
+
+### model3.4
+
+Outcome : Family Stressor Score
+
+Covariate : Personal Burnout Score, Work Burnout Score, Client Burnout Score, Age, Gender, Bmi
+
+interaction Work Burnout Score and Gender
+
+```{r}
+model3.4<-lm(FamilySS~PersonalBS+WorkBS+ClientBS+Age+Gender+Bmi+WorkBS*Gender, data=data2)
+summary(model3.4)
+```
+
+**There is interaction between Work Burnout Score with Gender (p<0.05)**
+
+### model3.5
+
+Outcome : Family Stressor Score
+
+Covariate : Personal Burnout Score, Work Burnout Score, Client Burnout Score, Age, Gender, Bmi
+
+interaction Work Burnout Score and Bmi
+
+```{r}
+model3.5<-lm(FamilySS~PersonalBS+WorkBS+ClientBS+Age+Gender+Bmi+WorkBS*Bmi, data=data2)
+summary(model3.5)
+```
+
+No significant interaction (p>0.05)
+
+### model3.6
+
+Outcome : Family Stressor Score
+
+Covariate : Personal Burnout Score, Work Burnout Score, Client Burnout Score, Age, Gender, Bmi
+
+interaction Client Burnout Score with Personal Burnout Score
+
+```{r}
+model3.6<-lm(FamilySS~PersonalBS+WorkBS+ClientBS+Age+Gender+Bmi+ClientBS*PersonalBS, data=data2)
+summary(model3.6)
+```
+
+No Significant interaction (p>0.05)
+
+### model3.7
+
+Outcome : Family Stressor Score
+
+Covariate : Personal Burnout Score, Work Burnout Score, Client Burnout Score, Age, Gender, Bmi
+
+interaction Client Burnout Score with Age
+
+```{r}
+model3.7<-lm(FamilySS~PersonalBS+WorkBS+ClientBS+Age+Gender+Bmi+ClientBS*Age, data=data2)
+summary(model3.7)
+```
+
+No Significant interaction (p>0.05)
+
+### model3.8
+
+Outcome : Family Stressor Score
+
+COvariate : Personal Burnout Score, Work Burnout Score, Client Burnout Score, Age, Gender, Bmi
+
+interaction Client Burnout Score with Gender
+
+```{r}
+model3.8<-lm(FamilySS~PersonalBS+WorkBS+ClientBS+Age+Gender+Bmi+ClientBS*Gender, data=data2)
+summary(model3.8)
+```
+
+No Significant interaction (p>0.05)
+
+
+### model3.9
+
+Outcome : Family Stressor Score
+
+COvariate : Personal Burnout Score, Work Burnout Score, Client Burnout Score, Age, Gender, Bmi
+
+interaction Client Burnout Score with Bmi
+
+```{r}
+model3.9<-lm(FamilySS~PersonalBS+WorkBS+ClientBS+Age+Gender+Bmi+ClientBS*Bmi, data=data2)
+summary(model3.9)
+```
+
+No Significant interaction (p>0.05)
+
+### model3.10
+
+Outcome : Family Stressor Score
+
+COvariate : Personal Burnout Score, Work Burnout Score, Client Burnout Score, Age, Gender, Bmi
+
+interaction Personal Burnout Score and Age
+
+```{r}
+model3.10<-lm(FamilySS~PersonalBS+WorkBS+ClientBS+Age+Gender+Bmi+PersonalBS*Age, data=data2)
+summary(model3.10)
+```
+
+No significant interaction (p>0.05)
+
+### model3.11
+
+Outcome : Family Stressor Score
+
+COvariate : Personal Burnout Score, Work Burnout Score, Client Burnout Score, Age, Gender, Bmi
+
+interaction Personal Burnout Score and Gender
+
+```{r}
+model3.11<-lm(FamilySS~PersonalBS+WorkBS+ClientBS+Age+Gender+Bmi+PersonalBS*Gender, data=data2)
+summary(model3.11)
+```
+
+No significant interaction (p>0.05)
+
+### model3.12
+
+Outcome : Family Stressor Score
+
+COvariate : Personal Burnout Score, Work Burnout Score, Client Burnout Score, Age, Gender, Bmi
+
+interaction Personal Burnout Score and Bmi
+
+```{r}
+model3.12<-lm(FamilySS~PersonalBS+WorkBS+ClientBS+Age+Gender+Bmi+PersonalBS*Bmi, data=data2)
+summary(model3.12)
+```
+
+No significant  interaction (p>0.05)
+
+### model3.13
+
+Outcome : Family Stressor Score
+
+COvariate : Personal Burnout Score, Work Burnout Score, Client Burnout Score, Age, Gender, Bmi
+
+interaction Age and Gender
+
+```{r}
+model3.13<-lm(FamilySS~PersonalBS+WorkBS+ClientBS+Age+Gender+Bmi+Age*Gender, data=data2)
+summary(model3.13)
+```
+
+No significant interaction (p>0.05)
+
+### model3.14
+
+Outcome : Family Stressor Score
+
+COvariate : Personal Burnout Score, Work Burnout Score, Client Burnout Score, Age, Gender, Bmi
+
+interaction Age and Bmi
+
+```{r}
+model3.14<-lm(FamilySS~PersonalBS+WorkBS+ClientBS+Age+Gender+Bmi+Age*Bmi, data=data2)
+summary(model3.14)
+```
+
+No significant interaction (p>0.05)
+
+### model3.15
+
+Outcome : Family Stressor Score
+
+COvariate : Personal Burnout Score, Work Burnout Score, Client Burnout Score, Age, Gender, Bmi
+
+interaction Gender and Bmi
+
+```{r}
+model3.15<-lm(FamilySS~PersonalBS+WorkBS+ClientBS+Age+Gender+Bmi+Gender*Bmi, data=data2)
+summary(model3.15)
+```
+
+No significant interaction (p>0.05)
+
+
+### Intepretation of interaction
+
+**There is significant interaction between Work Burnout Score with Gender found in this study**
+
+
+### Comparison between prelim with and without interaction
+
+```{r}
+anova(prelim,model3.4)
+```
+
+There is significant different between prelim with and without interaction.
+
+## Model Assessment
+
+### Preliminary Final Model
+
+Due to there is significant different between prelim model with and out interaction term, thus the interaction term will be included in the final model. FUrthermore, adjusted R squared of model with interaction is higher (0.492).
+
+```{r}
+prelim.final.model<-model3.4
+tidy(prelim.final.model)
+```
+
+this is our preliminary final model
+
+### Diagnostic plots
+
+
+
+
+```{r}
+plot(prelim.final.model)
+```
+
+Residual appear to be linear. Homoscedasticity is shown as in the plot above. Assumption for equal variance and linearity met.
+
+### Fitted Values, residuals and influentials value
+
+```{r}
+resmod<-residuals(prelim.final.model)
+head(resmod)
+hist(resmod)
+```
+
+histogram of residuals is appear to be normally distributed thus assumption for normality is met.
+
+```{r}
+ggplot(data = prelim.final.model, aes(x=.fitted,y=.resid))+geom_point()+geom_hline(yintercept=0)
+```
+
+
+residual appeared to be randomly scattered. Assumption for equal variance is met.
+
+```{r}
+library(broom)
+library(knitr)
+kable(head(augment(prelim.final.model)))
+kable(tail(augment(prelim.final.model)))
+```
+
+```{r}
+ggplot(data = prelim.final.model,
+       aes(x=.fitted, y=.resid)) +
+  geom_point() +
+  geom_hline(yintercept = 0)
+```
+
+### intepretation of scatter plot of residual and predicted
+
+based on scattered plot of residual vs predicted:
+1) for each x value, there is subpopulation of y value that is normally distributed
+2) the variance for the subopulations is equal
+
+
+### Prediction
+
+```{r}
+new_data<-expand.grid(PersonalBS = c(0.5,2.0,3.5),
+                      WorkBS = c(0.5, 2.5, 3.5),
+                      ClientBS = c(0.5,2.0,3.5),
+                      Age = c(24,50,53),
+                      Gender = c("Male","Female"),
+                      Bmi = c(18,20,30))
+data4<-augment(prelim.final.model, newdata = new_data)
+summary(data4)
+data4
+```
+
+
+### Influentials
+
+
+```{r}
+influen.obs<-augment(prelim.final.model)%>%filter(.std.resid >2|.std.resid < -2 |.hat > 0.0533)
+influen.obs
+```
+
+
+##non influentials
+
+```{r}
+non.influen.obs<- augment(prelim.final.model)%>%filter (.std.resid < 2 & .std.resid > 0.0533)
+non.influen.obs
+```
+
+
+### compare final model with and without influential observation
+
+
+```{r}
+finalmodel2<- lm(FamilySS~PersonalBS+WorkBS+ClientBS+Age+Gender+Bmi+WorkBS*Gender, data= non.influen.obs)
+plot(finalmodel2)
+tidy(finalmodel2)
+```
+
+
+no sifnificant different 
+
+## Final Model
+
+
+
+```{r}
+tidy(prelim.final.model, conf.int = T)
+```
+
+
+### Final Model Equation
+
+Family Stressor Score = 0.561 + 0.586(Personal Burnout Score) + 0.086(Work Burnout Score) +0.118(Client Burnout Score) - 0.0145(Age) - 0.407(Male) - 0.002(Bmi) + 0.172 (WorkBS*GenderMale)
+
+### Final Model Intepretation
+
+Multiple linear regression shows that Personal Burnout Score, Work Burnout Score, Client Burnout Score, Age, Male, Bmi and WorkBS*GenderMale have linear relationship to Family Stressor Score
+
+49.2% of variability in Family Stressor Score is explained by model3.4
+
+Those who increase 1 unit of Personal Burnout Score, the Family Stressor Score will be increase by 0.586 unit (95% CI = 0.480, 0.691) when adjusted with Work Burnout Score, Client Burnout Score, Age, Male, Bmi and WorkBS*GenderMale.
+
+### Model Defend
+
+there are 7 covariates that are included in the final model namely Personal Burnout Score, Work Burnout Score, Client Burnout Score, Age, Male, Bmi and WorkBS*GenderMale. these covariates are significantly associated with Family Stressor Score in multivariable analysis
+
+The model is the best fitted model and most biologically sound. The model are able to explain 49.2% of variation of Family Stressor Score.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

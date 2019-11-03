@@ -518,10 +518,12 @@ no interaction
 Preliminary Final Model
 
 - outcome: dm
-- predictor: age, dbp, fbs, gender, dbp:fbs
+- predictor: age, dbp, fbs, gender, dbp:cholesterol
 
 ```{r}
-PrelimFinalModel <- Model41_Int04
+PrelimFinalModel <- glm(dmdxcat ~ age + mdbpr + totchol + gendercat + mdbpr:totchol,
+                        family = binomial(link = "logit"),
+                        data = LogDS)
 summary(PrelimFinalModel)
 kable(tidy(PrelimFinalModel))
 ```
@@ -581,8 +583,8 @@ kable(head(augment(PrelimFinalModel,
 
 
 ```{r HL test for Prelim Final Model}
-#logitgof(LogDS$dmdx, fitted(PrelimFinalModel), g = 10)
-#hoslem.test(LogDS$dmdxcat, fitted(PrelimFinalModel), g = 10)
+logitgof(LogDS$dmdx, fitted(PrelimFinalModel), g = 10)
+hoslem.test(LogDS$dmdxcat, fitted(PrelimFinalModel), g = 10)
 HLT_PrelimModel <- dx(PrelimFinalModel, byCov = T)
 kable(tail(HLT_PrelimModel))
 ```
@@ -596,10 +598,33 @@ plot(PrelimFinalModel)
 ### ROC Curve
 
 ```{r}
-#gof_PrelimModel <- gof(PrelimFinalModel, plotROC = T)
-#gof_PrelimModel
-#gof_PrelimModel$auc
+gof_PrelimModel <- gof(PrelimFinalModel, plotROC = T)
+gof_PrelimModel
+gof_PrelimModel$auc
 ```
 
+#### Chisquare for Goodness of fitness 
+
+```{r}
+kable(gof_PrelimModel$chiSq)
+```
+
+HL not significant - model is fit
+
+#### Hosmer Lemeshow Test Contingency Table
+
+```{r}
+kable(gof_PrelimModel$ctHL)
+```
+
+summary of GOF tests
+
+```{r}
+kable(gof_PrelimModel$gof)
+```
+
+
 ## Linearity in Logit
+
+
 

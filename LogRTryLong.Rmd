@@ -521,9 +521,57 @@ Preliminary Final Model
 - predictor: age, dbp, fbs, gender, dbp:fbs
 
 ```{r}
-PrelimFInalModel <- Model41_Int04
-summary(PrelimFInalModel)
-kable(tidy(PrelimFInalModel))
+PrelimFinalModel <- Model41_Int04
+summary(PrelimFinalModel)
+kable(tidy(PrelimFinalModel))
+```
+
+Model matrix for PrelimFinalModel
+
+```{r model matrix PrelimFinalModel}
+kable(head(model.matrix(PrelimFinalModel)))
+```
+
+
+#### Predicted value - raw predicted (logit)
+
+Raw Predicted Values (logit) = a+bx
+
+```{r}
+logitPredProb_PrelimModel <- predict(PrelimFinalModel, type="link")
+kable(head(logitPredProb_PrelimModel))
+```
+
+#### Predicted value - odds predicted ()
+
+odds predicted = exp(a+bx) 
+
+```{r}
+PredProb_PrelimModel <- fitted(PrelimFinalModel)
+kable(head(PredProb_PrelimModel))
+```
+
+alternatively
+```{r}
+PredProbAlt_PrelimModel <- predict(PrelimFinalModel, type = "response")
+kable(head(PredProbAlt_PrelimModel))
+```
+
+
+#### Residual - raw
+
+raw residual
+
+```{r raw residual}
+kable(head(augment(PrelimFinalModel)))
+```
+
+probability residual
+
+```{r Prob Residual PrelimFinalModel}
+kable(head(augment(PrelimFinalModel,
+                   type.predict="response",
+                   type.residual="respone")))
 ```
 
 
@@ -531,43 +579,27 @@ kable(tidy(PrelimFInalModel))
 
 ### Hosmer Lemeshow Test
 
+
 ```{r HL test for Prelim Final Model}
-#logitgof(LogDS$dmdxcat, fitted(PrelimFInalModel), g = 11)
-#hoslem.test(LogDS$dmdxcat, fitted(PrelimFInalModel), g = 10)
-HLT_PrelimModel <- dx(PrelimFInalModel, byCov = T)
+#logitgof(LogDS$dmdx, fitted(PrelimFinalModel), g = 10)
+#hoslem.test(LogDS$dmdxcat, fitted(PrelimFinalModel), g = 10)
+HLT_PrelimModel <- dx(PrelimFinalModel, byCov = T)
 kable(tail(HLT_PrelimModel))
 ```
 
 ### Diagnostic Plot
 
 ```{r}
-plot(PrelimFInalModel)
+plot(PrelimFinalModel)
 ```
 
 ### ROC Curve
 
 ```{r}
-#gof_PrelimModel <- gof(PrelimFInalModel, plotROC = T)
+#gof_PrelimModel <- gof(PrelimFinalModel, plotROC = T)
 #gof_PrelimModel
 #gof_PrelimModel$auc
 ```
 
-
-
-
-
 ## Linearity in Logit
-
-
-# Prediction
-
-Final Model
-
-
-
-
-
-
-
-
 

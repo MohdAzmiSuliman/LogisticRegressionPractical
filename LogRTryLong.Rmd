@@ -532,7 +532,7 @@ kable(tidy(PrelimFInalModel))
 ### Hosmer Lemeshow Test
 
 ```{r HL test for Prelim Final Model}
-#logitgof(LogDS$dmdxcat, fitted(PrelimFInalModel), g = 10)
+#logitgof(LogDS$dmdxcat, fitted(PrelimFInalModel), g = 11)
 #hoslem.test(LogDS$dmdxcat, fitted(PrelimFInalModel), g = 10)
 HLT_PrelimModel <- dx(PrelimFInalModel, byCov = T)
 kable(tail(HLT_PrelimModel))
@@ -559,6 +559,9 @@ plot(PrelimFInalModel)
 ## Linearity in Logit
 
 
+# Prediction
+
+Final Model
 
 
 

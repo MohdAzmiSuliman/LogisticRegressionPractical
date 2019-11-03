@@ -2082,7 +2082,56 @@ kable(head(LogDS2))</code></pre>
 </tr>
 </tbody>
 </table>
-<pre class="r"><code>kable(describe(LogDS [, 2:19]))</code></pre>
+<pre class="r"><code>summary(LogDS)</code></pre>
+<pre><code>##    codesub               age             dmdx            height     
+##  Length:3820        Min.   :18.00   Min.   :0.0000   Min.   :1.290  
+##  Class :character   1st Qu.:38.00   1st Qu.:0.0000   1st Qu.:1.510  
+##  Mode  :character   Median :48.00   Median :0.0000   Median :1.560  
+##                     Mean   :47.92   Mean   :0.1196   Mean   :1.568  
+##                     3rd Qu.:58.00   3rd Qu.:0.0000   3rd Qu.:1.630  
+##                     Max.   :89.00   Max.   :1.0000   Max.   :1.960  
+##                                                                     
+##      weight           waist             hip             msbpr      
+##  Min.   : 30.00   Min.   : 50.80   Min.   : 61.00   Min.   : 76.5  
+##  1st Qu.: 53.60   1st Qu.: 77.00   1st Qu.: 91.00   1st Qu.:117.0  
+##  Median : 62.00   Median : 86.00   Median : 97.00   Median :129.8  
+##  Mean   : 63.25   Mean   : 85.92   Mean   : 97.51   Mean   :132.7  
+##  3rd Qu.: 71.50   3rd Qu.: 94.40   3rd Qu.:104.00   3rd Qu.:146.0  
+##  Max.   :128.50   Max.   :134.00   Max.   :148.00   Max.   :210.0  
+##                   NA's   :2        NA's   :2                       
+##      mdbpr            hba1c             fbs            mogtt2h      
+##  Min.   : 41.50   Min.   : 3.800   Min.   : 2.500   Min.   : 0.170  
+##  1st Qu.: 70.00   1st Qu.: 5.100   1st Qu.: 4.460   1st Qu.: 5.210  
+##  Median : 77.50   Median : 5.400   Median : 5.160   Median : 6.610  
+##  Mean   : 77.98   Mean   : 5.782   Mean   : 5.612   Mean   : 7.206  
+##  3rd Qu.: 85.12   3rd Qu.: 5.800   3rd Qu.: 5.960   3rd Qu.: 8.350  
+##  Max.   :123.00   Max.   :15.000   Max.   :28.010   Max.   :29.830  
+##                                    NA's   :3        NA's   :420     
+##     totchol         ftrigliz          hdl             ldl       
+##  Min.   : 2.13   Min.   :0.180   Min.   :0.120   Min.   :0.510  
+##  1st Qu.: 4.96   1st Qu.:0.920   1st Qu.:1.110   1st Qu.:2.800  
+##  Median : 5.70   Median :1.250   Median :1.330   Median :3.460  
+##  Mean   : 5.77   Mean   :1.511   Mean   :1.355   Mean   :3.543  
+##  3rd Qu.: 6.50   3rd Qu.:1.752   3rd Qu.:1.550   3rd Qu.:4.220  
+##  Max.   :14.91   Max.   :7.990   Max.   :4.430   Max.   :9.420  
+##                                                                 
+##      gender           crural            bmi         dmdxcat   
+##  Min.   :0.0000   Min.   :0.0000   Min.   : 9.241   no :3363  
+##  1st Qu.:0.0000   1st Qu.:0.0000   1st Qu.:22.176   yes: 457  
+##  Median :0.0000   Median :0.0000   Median :25.283             
+##  Mean   :0.3463   Mean   :0.4762   Mean   :25.688             
+##  3rd Qu.:1.0000   3rd Qu.:1.0000   3rd Qu.:28.674             
+##  Max.   :1.0000   Max.   :1.0000   Max.   :42.374             
+##                                                               
+##   gendercat    cruralcat   
+##  female:2497   urban:2001  
+##  male  :1323   rural:1819  
+##                            
+##                            
+##                            
+##                            
+## </code></pre>
+<pre class="r"><code>kable(describe(LogDS [, c(2, 4:10, 12)]))</code></pre>
 <table>
 <thead>
 <tr class="header">
@@ -2107,295 +2156,164 @@ kable(head(LogDS2))</code></pre>
 <td>age</td>
 <td align="right">1</td>
 <td align="right">3820</td>
-<td align="right">47.9196335</td>
+<td align="right">47.919634</td>
 <td align="right">14.4684859</td>
-<td align="right">48.00000</td>
-<td align="right">48.0215969</td>
+<td align="right">48.00</td>
+<td align="right">48.021597</td>
 <td align="right">14.826000</td>
-<td align="right">18.000000</td>
-<td align="right">89.00000</td>
-<td align="right">71.00000</td>
+<td align="right">18.00</td>
+<td align="right">89.00</td>
+<td align="right">71.00</td>
 <td align="right">-0.0266645</td>
 <td align="right">-0.5621208</td>
 <td align="right">0.2340946</td>
 </tr>
 <tr class="even">
-<td>dmdx</td>
+<td>height</td>
 <td align="right">2</td>
 <td align="right">3820</td>
-<td align="right">0.1196335</td>
-<td align="right">0.3245750</td>
-<td align="right">0.00000</td>
-<td align="right">0.0245419</td>
-<td align="right">0.000000</td>
-<td align="right">0.000000</td>
-<td align="right">1.00000</td>
-<td align="right">1.00000</td>
-<td align="right">2.3431685</td>
-<td align="right">3.4913528</td>
-<td align="right">0.0052515</td>
-</tr>
-<tr class="odd">
-<td>height</td>
-<td align="right">3</td>
-<td align="right">3820</td>
-<td align="right">1.5682906</td>
+<td align="right">1.568291</td>
 <td align="right">0.0849144</td>
-<td align="right">1.56000</td>
-<td align="right">1.5652291</td>
+<td align="right">1.56</td>
+<td align="right">1.565229</td>
 <td align="right">0.088956</td>
-<td align="right">1.290000</td>
-<td align="right">1.96000</td>
-<td align="right">0.67000</td>
+<td align="right">1.29</td>
+<td align="right">1.96</td>
+<td align="right">0.67</td>
 <td align="right">0.3607610</td>
 <td align="right">0.0845608</td>
 <td align="right">0.0013739</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>weight</td>
-<td align="right">4</td>
+<td align="right">3</td>
 <td align="right">3820</td>
-<td align="right">63.2549660</td>
+<td align="right">63.254966</td>
 <td align="right">13.2276273</td>
-<td align="right">62.00000</td>
-<td align="right">62.5842899</td>
+<td align="right">62.00</td>
+<td align="right">62.584290</td>
 <td align="right">13.343400</td>
-<td align="right">30.000000</td>
-<td align="right">128.50000</td>
-<td align="right">98.50000</td>
+<td align="right">30.00</td>
+<td align="right">128.50</td>
+<td align="right">98.50</td>
 <td align="right">0.5470008</td>
 <td align="right">0.4297622</td>
 <td align="right">0.2140180</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>waist</td>
-<td align="right">5</td>
+<td align="right">4</td>
 <td align="right">3818</td>
-<td align="right">85.9211524</td>
+<td align="right">85.921152</td>
 <td align="right">12.4917722</td>
-<td align="right">86.00000</td>
-<td align="right">85.6155301</td>
+<td align="right">86.00</td>
+<td align="right">85.615530</td>
 <td align="right">13.343400</td>
-<td align="right">50.800000</td>
-<td align="right">134.00000</td>
-<td align="right">83.20000</td>
+<td align="right">50.80</td>
+<td align="right">134.00</td>
+<td align="right">83.20</td>
 <td align="right">0.2508684</td>
 <td align="right">-0.0981115</td>
 <td align="right">0.2021651</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>hip</td>
-<td align="right">6</td>
+<td align="right">5</td>
 <td align="right">3818</td>
-<td align="right">97.5079754</td>
+<td align="right">97.507975</td>
 <td align="right">10.1617305</td>
-<td align="right">97.00000</td>
-<td align="right">97.3297448</td>
+<td align="right">97.00</td>
+<td align="right">97.329745</td>
 <td align="right">9.711030</td>
-<td align="right">61.000000</td>
-<td align="right">148.00000</td>
-<td align="right">87.00000</td>
+<td align="right">61.00</td>
+<td align="right">148.00</td>
+<td align="right">87.00</td>
 <td align="right">0.1635996</td>
 <td align="right">0.6317992</td>
 <td align="right">0.1644560</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>msbpr</td>
-<td align="right">7</td>
+<td align="right">6</td>
 <td align="right">3820</td>
-<td align="right">132.7203770</td>
+<td align="right">132.720377</td>
 <td align="right">22.0504169</td>
-<td align="right">129.75000</td>
-<td align="right">131.1485897</td>
+<td align="right">129.75</td>
+<td align="right">131.148590</td>
 <td align="right">21.127050</td>
-<td align="right">76.500000</td>
-<td align="right">210.00000</td>
-<td align="right">133.50000</td>
+<td align="right">76.50</td>
+<td align="right">210.00</td>
+<td align="right">133.50</td>
 <td align="right">0.6658443</td>
 <td align="right">0.3102403</td>
 <td align="right">0.3567674</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>mdbpr</td>
-<td align="right">8</td>
+<td align="right">7</td>
 <td align="right">3820</td>
-<td align="right">77.9776178</td>
+<td align="right">77.977618</td>
 <td align="right">11.3444799</td>
-<td align="right">77.50000</td>
-<td align="right">77.6951898</td>
+<td align="right">77.50</td>
+<td align="right">77.695190</td>
 <td align="right">11.119500</td>
-<td align="right">41.500000</td>
-<td align="right">123.00000</td>
-<td align="right">81.50000</td>
+<td align="right">41.50</td>
+<td align="right">123.00</td>
+<td align="right">81.50</td>
 <td align="right">0.2365319</td>
 <td align="right">-0.0817571</td>
 <td align="right">0.1835494</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>hba1c</td>
-<td align="right">9</td>
+<td align="right">8</td>
 <td align="right">3820</td>
-<td align="right">5.7817016</td>
+<td align="right">5.781702</td>
 <td align="right">1.3791466</td>
-<td align="right">5.40000</td>
-<td align="right">5.4883508</td>
+<td align="right">5.40</td>
+<td align="right">5.488351</td>
 <td align="right">0.444780</td>
-<td align="right">3.800000</td>
-<td align="right">15.00000</td>
-<td align="right">11.20000</td>
+<td align="right">3.80</td>
+<td align="right">15.00</td>
+<td align="right">11.20</td>
 <td align="right">3.0867754</td>
 <td align="right">11.0211430</td>
 <td align="right">0.0223141</td>
 </tr>
-<tr class="even">
-<td>fbs</td>
-<td align="right">10</td>
-<td align="right">3817</td>
-<td align="right">5.6120278</td>
-<td align="right">2.3297237</td>
-<td align="right">5.16000</td>
-<td align="right">5.2312831</td>
-<td align="right">1.111950</td>
-<td align="right">2.500000</td>
-<td align="right">28.01000</td>
-<td align="right">25.51000</td>
-<td align="right">3.2043097</td>
-<td align="right">15.4918176</td>
-<td align="right">0.0377089</td>
-</tr>
 <tr class="odd">
 <td>mogtt2h</td>
-<td align="right">11</td>
+<td align="right">9</td>
 <td align="right">3400</td>
-<td align="right">7.2058441</td>
+<td align="right">7.205844</td>
 <td align="right">3.1370823</td>
-<td align="right">6.61000</td>
-<td align="right">6.7950294</td>
+<td align="right">6.61</td>
+<td align="right">6.795029</td>
 <td align="right">2.253552</td>
-<td align="right">0.170000</td>
-<td align="right">29.83000</td>
-<td align="right">29.66000</td>
+<td align="right">0.17</td>
+<td align="right">29.83</td>
+<td align="right">29.66</td>
 <td align="right">1.8347785</td>
 <td align="right">5.4475458</td>
 <td align="right">0.0538005</td>
 </tr>
 <tr class="even">
-<td>totchol</td>
-<td align="right">12</td>
-<td align="right">3820</td>
-<td align="right">5.7698115</td>
-<td align="right">1.2124141</td>
-<td align="right">5.70000</td>
-<td align="right">5.7297284</td>
-<td align="right">1.141602</td>
-<td align="right">2.130000</td>
-<td align="right">14.91000</td>
-<td align="right">12.78000</td>
-<td align="right">0.5451984</td>
-<td align="right">1.7449786</td>
-<td align="right">0.0196164</td>
-</tr>
-<tr class="odd">
-<td>ftrigliz</td>
-<td align="right">13</td>
-<td align="right">3820</td>
-<td align="right">1.5113639</td>
-<td align="right">0.9954019</td>
-<td align="right">1.25000</td>
-<td align="right">1.3415380</td>
-<td align="right">0.578214</td>
-<td align="right">0.180000</td>
-<td align="right">7.99000</td>
-<td align="right">7.81000</td>
-<td align="right">2.8742941</td>
-<td align="right">11.4115916</td>
-<td align="right">0.0161052</td>
-</tr>
-<tr class="even">
-<td>hdl</td>
-<td align="right">14</td>
-<td align="right">3820</td>
-<td align="right">1.3551047</td>
-<td align="right">0.3555564</td>
-<td align="right">1.33000</td>
-<td align="right">1.3355007</td>
-<td align="right">0.326172</td>
-<td align="right">0.120000</td>
-<td align="right">4.43000</td>
-<td align="right">4.31000</td>
-<td align="right">0.8313685</td>
-<td align="right">2.8770872</td>
-<td align="right">0.0057528</td>
-</tr>
-<tr class="odd">
-<td>ldl</td>
-<td align="right">15</td>
-<td align="right">3820</td>
-<td align="right">3.5431728</td>
-<td align="right">1.0842630</td>
-<td align="right">3.46000</td>
-<td align="right">3.4993717</td>
-<td align="right">1.052646</td>
-<td align="right">0.510000</td>
-<td align="right">9.42000</td>
-<td align="right">8.91000</td>
-<td align="right">0.4828493</td>
-<td align="right">0.5405287</td>
-<td align="right">0.0175430</td>
-</tr>
-<tr class="even">
-<td>gender</td>
-<td align="right">16</td>
-<td align="right">3820</td>
-<td align="right">0.3463351</td>
-<td align="right">0.4758638</td>
-<td align="right">0.00000</td>
-<td align="right">0.3079188</td>
-<td align="right">0.000000</td>
-<td align="right">0.000000</td>
-<td align="right">1.00000</td>
-<td align="right">1.00000</td>
-<td align="right">0.6456666</td>
-<td align="right">-1.5835289</td>
-<td align="right">0.0076993</td>
-</tr>
-<tr class="odd">
-<td>crural</td>
-<td align="right">17</td>
-<td align="right">3820</td>
-<td align="right">0.4761780</td>
-<td align="right">0.4994976</td>
-<td align="right">0.00000</td>
-<td align="right">0.4702225</td>
-<td align="right">0.000000</td>
-<td align="right">0.000000</td>
-<td align="right">1.00000</td>
-<td align="right">1.00000</td>
-<td align="right">0.0953588</td>
-<td align="right">-1.9914278</td>
-<td align="right">0.0080817</td>
-</tr>
-<tr class="even">
-<td>bmi</td>
-<td align="right">18</td>
-<td align="right">3820</td>
-<td align="right">25.6882584</td>
-<td align="right">4.8231041</td>
-<td align="right">25.28257</td>
-<td align="right">25.4625306</td>
-<td align="right">4.793846</td>
-<td align="right">9.240941</td>
-<td align="right">42.37362</td>
-<td align="right">33.13267</td>
-<td align="right">0.4286514</td>
-<td align="right">-0.0334351</td>
-<td align="right">0.0780360</td>
+<td>## Data Vi</td>
+<td align="right">sualiza</td>
+<td align="right">tion</td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right"></td>
 </tr>
 </tbody>
 </table>
-</div>
-<div id="data-visualization" class="section level2">
-<h2>Data Visualization</h2>
 <p>Histogram for numerical data</p>
 <pre class="r"><code>ggplot(LogDS, aes(age)) +
   geom_histogram(aes(y=..density..)) +
@@ -2952,6 +2870,17 @@ summary(Model01)</code></pre>
 </tr>
 </tbody>
 </table>
+<pre class="r"><code>names(Model01)</code></pre>
+<pre><code>##  [1] &quot;coefficients&quot;      &quot;residuals&quot;         &quot;fitted.values&quot;    
+##  [4] &quot;effects&quot;           &quot;R&quot;                 &quot;rank&quot;             
+##  [7] &quot;qr&quot;                &quot;family&quot;            &quot;linear.predictors&quot;
+## [10] &quot;deviance&quot;          &quot;aic&quot;               &quot;null.deviance&quot;    
+## [13] &quot;iter&quot;              &quot;weights&quot;           &quot;prior.weights&quot;    
+## [16] &quot;df.residual&quot;       &quot;df.null&quot;           &quot;y&quot;                
+## [19] &quot;converged&quot;         &quot;boundary&quot;          &quot;model&quot;            
+## [22] &quot;call&quot;              &quot;formula&quot;           &quot;terms&quot;            
+## [25] &quot;data&quot;              &quot;offset&quot;            &quot;control&quot;          
+## [28] &quot;method&quot;            &quot;contrasts&quot;         &quot;xlevels&quot;</code></pre>
 </div>
 <div id="model02---gender" class="section level3">
 <h3>Model02 - Gender</h3>
@@ -4636,7 +4565,7 @@ summary(PrelimFInalModel)</code></pre>
 <h2>Model Checking</h2>
 <div id="hosmer-lemeshow-test" class="section level3">
 <h3>Hosmer Lemeshow Test</h3>
-<pre class="r"><code>#logitgof(LogDS$dmdxcat, fitted(PrelimFInalModel), g = 10)
+<pre class="r"><code>#logitgof(LogDS$dmdxcat, fitted(PrelimFInalModel), g = 11)
 #hoslem.test(LogDS$dmdxcat, fitted(PrelimFInalModel), g = 10)
 HLT_PrelimModel &lt;- dx(PrelimFInalModel, byCov = T)
 kable(tail(HLT_PrelimModel))</code></pre>
@@ -4801,6 +4730,10 @@ kable(tail(HLT_PrelimModel))</code></pre>
 <div id="linearity-in-logit" class="section level2">
 <h2>Linearity in Logit</h2>
 </div>
+</div>
+<div id="prediction" class="section level1">
+<h1>Prediction</h1>
+<p>Final Model</p>
 </div>
 
 

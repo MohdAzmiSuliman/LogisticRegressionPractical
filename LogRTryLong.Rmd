@@ -64,9 +64,9 @@ kable(head(LogDS2))
 
 ```{r Data Summary, message=F}
 kable(summary(LogDS [, 20:22]))
-kable(describe(LogDS [, 2:19]))
+summary(LogDS)
+kable(describe(LogDS [, c(2, 4:10, 12)]))
 ```
-
 ## Data Visualization
 
 Histogram for numerical data
@@ -172,6 +172,7 @@ Model01 <- glm(dmdxcat ~ age,
                family = binomial (link = "logit"))
 summary(Model01)
 kable(tidy(Model01))
+names(Model01)
 ```
 
 ### Model02 - Gender

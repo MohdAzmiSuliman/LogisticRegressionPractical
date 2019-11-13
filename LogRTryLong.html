@@ -5100,6 +5100,20 @@ kable(tail(HLT_PrelimModel))</code></pre>
 </div>
 <div id="diagnostic-plot" class="section level3">
 <h3>Diagnostic Plot</h3>
+<pre class="r"><code>PrelimFinalModel</code></pre>
+<pre><code>## 
+## Call:  glm(formula = dmdxcat ~ age + mdbpr + totchol + gendercat + mdbpr:totchol, 
+##     family = binomial(link = &quot;logit&quot;), data = LogDS)
+## 
+## Coefficients:
+##   (Intercept)            age          mdbpr        totchol  gendercatmale  
+##     -8.358601       0.049031       0.049270       0.320980       0.085192  
+## mdbpr:totchol  
+##     -0.004309  
+## 
+## Degrees of Freedom: 3819 Total (i.e. Null);  3814 Residual
+## Null Deviance:       2798 
+## Residual Deviance: 2572  AIC: 2584</code></pre>
 <pre class="r"><code>plot(PrelimFinalModel)</code></pre>
 </div>
 <div id="roc-curve" class="section level3">

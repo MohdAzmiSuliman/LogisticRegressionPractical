@@ -592,6 +592,7 @@ kable(tail(HLT_PrelimModel))
 ### Diagnostic Plot
 
 ```{r}
+PrelimFinalModel
 plot(PrelimFinalModel)
 ```
 

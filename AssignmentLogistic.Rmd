@@ -1,0 +1,158 @@
+---
+title: "Untitled"
+author: "Mohd Azmi"
+date: "06/12/2019"
+output:
+  html_document:
+    toc: yes
+    toc_float:
+      collapsed: no
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+
+## Research Problem
+
+## Packages
+
+```{r}
+library(pacman)
+p_load(dplyr, psych, knitr, ggplot2, broom)
+```
+
+
+## Data
+
+```{r}
+burnDS <- read.delim("BURN1000.txt", header = TRUE, sep = "\t", dec = ".")
+
+burnDS2 <- burnDS %>%
+  mutate(DcStat = factor(DEATH, labels = c("Alive", "Death")),
+         Gender = factor(GENDER, labels = c("Female", "Male")),
+         Ethnic = factor(RACEC, labels = c("Non-white", "White")),
+         Inhale = factor(INH_INJ, labels = c("No", "Yes")),
+         Flame = factor(FLAME, labels = c("No", "Yes"))) %>%
+  select(ID, DcStat, AGE, Gender, Ethnic, TBSA, Inhale, Flame)
+burnDS2
+```
+
+
+# Descriptive Analysis
+
+## Data Summary
+
+```{r}
+burnDS2 %>%
+  select_if(is.numeric) %>%
+  summary()
+burnDS2 %>%
+  select_if(is.factor) %>%
+  summary()
+```
+
+The age and total burn surface area distribution of the participant, group by discharge status was shown as below
+```{r}
+ggplot(burnDS2, aes(x=AGE)) +
+  geom_histogram() +
+  facet_wrap(~DcStat)
+  
+ggplot(burnDS2, aes(x=TBSA)) +
+  geom_histogram() +
+  facet_wrap(~DcStat)
+```
+
+the distribution of gender, ethnicity, burn involved inhalation injury and flame involvement, group by discharge status, was shown as below
+```{r}
+ggplot(burnDS2, aes(x=Gender, fill=Gender)) +
+  geom_bar() +
+  facet_wrap(~DcStat)
+ggplot(burnDS2, aes(x=Ethnic, fill=Ethnic)) +
+  geom_bar() +
+  facet_wrap(~DcStat)
+ggplot(burnDS2, aes(x=Inhale, fill=Inhale)) +
+  geom_bar() +
+  facet_wrap(~DcStat)
+ggplot(burnDS2, aes(x=Flame, fill=Flame)) +
+  geom_bar() +
+  facet_wrap(~DcStat)
+```
+
+# Univariable Analysis
+
+Univariable analysis show that age, total burn surface area, inhalation injury and flame involvement was significant (at p < 0.05) in simple logistic regression. The detail of the simple logistic regression was shown as below.
+
+```{r}
+tidy(glm(DcStat ~ AGE, data = burnDS2, family = binomial))
+tidy(glm(DcStat ~ Gender, data = burnDS2, family = binomial))
+tidy(glm(DcStat ~ Ethnic, data = burnDS2, family = binomial))
+tidy(glm(DcStat ~ TBSA, data = burnDS2, family = binomial))
+tidy(glm(DcStat ~ Inhale, data = burnDS2, family = binomial))
+tidy(glm(DcStat ~ Flame, data = burnDS2, family = binomial))
+```
+
+
+```{r}
+#all_SLR <- burnDS2 %>%
+#  purrr::map(~glm(DcStat ~ .x, data = burnDS2, family = binomial, maxit=100)) %>%
+#  purrr::map(tidy) %>%
+#  bind_rows()
+## unable to use purr::map function 
+```
+
+# Multivariable Analysis
+
+Several main effect model was establesh through variable selection.
+
+## Model 1
+
+All variable selected for model 1. Parameter for Multiple Logistic Regression for Model 1 was shown as below. Model 2 will have all variable in Model 1 except for gender variable, while model 3 will have all variable in Model 1 except for gender and flame involvement variable.
+
+
+```{r}
+model1 <- glm(DcStat ~ AGE + Gender + Ethnic + TBSA + Inhale + Flame,
+              data = burnDS2,
+              family = binomial)
+summary(model1)
+model2 <- glm(DcStat ~ AGE + Ethnic + TBSA + Inhale + Flame,
+              data = burnDS2,
+              family = binomial)
+model3 <- glm(DcStat ~ AGE + Ethnic + TBSA + Inhale,
+              data = burnDS2,
+              family = binomial)
+```
+
+## Model Selection
+
+Model comparison was done comparing between model 1 with model 2 and 3, using LR test method. There was no significant difference between model 1 with model 2 and 3, hence the simplest model, model 3 was taken as preliminary final model.
+
+```{r}
+anova(model1, model2, model3, test = "Chisq")
+PrelimFinalModel <- model3
+```
+
+## Interaction
+
+Variable age and ethnicity shown significant interaction, as shown below.
+
+```{r}
+Model3_AgeEthnicInt <- glm(DcStat ~ AGE + Ethnic + TBSA + Inhale + AGE:Ethnic,
+                           data = burnDS2,
+                           family = binomial)
+tidy(Model3_AgeEthnicInt)
+```
+
+no interaction between age & tbsa
+
+```{r}
+Model3_AgeTBSAInt <- glm(DcStat ~ AGE + Ethnic + TBSA + Inhale + AGE:TBSA,
+              data = burnDS2,
+              family = binomial)
+summary(Model3_AgeTBSAInt)
+
+Model3
+```
+

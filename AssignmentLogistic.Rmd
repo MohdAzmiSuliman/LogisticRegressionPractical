@@ -21,7 +21,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 library(pacman)
-p_load(dplyr, psych, knitr, ggplot2, broom)
+p_load(dplyr, psych, knitr, ggplot2, broom, LogisticDx, generalhoslem, ResourceSelection)
 ```
 
 
@@ -36,8 +36,7 @@ burnDS2 <- burnDS %>%
          Ethnic = factor(RACEC, labels = c("Non-white", "White")),
          Inhale = factor(INH_INJ, labels = c("No", "Yes")),
          Flame = factor(FLAME, labels = c("No", "Yes"))) %>%
-  select(ID, DcStat, AGE, Gender, Ethnic, TBSA, Inhale, Flame)
-burnDS2
+  dplyr::select(DcStat, AGE, Gender, Ethnic, TBSA, Inhale, Flame)
 ```
 
 
@@ -107,9 +106,9 @@ tidy(glm(DcStat ~ Flame, data = burnDS2, family = binomial))
 
 Several main effect model was establesh through variable selection.
 
-## Model 1
+## Preliminary Main Effect Models
 
-All variable selected for model 1. Parameter for Multiple Logistic Regression for Model 1 was shown as below. Model 2 will have all variable in Model 1 except for gender variable, while model 3 will have all variable in Model 1 except for gender and flame involvement variable.
+Several Preliminary Main Effect Models will be compared to find Main Effect Models. All variable selected for model 1. Parameter for Multiple Logistic Regression for Model 1 was shown as below. Model 2 will have all variable in Model 1 except for gender variable, while model 3 will have all variable in Model 1 except for gender and flame involvement variable.
 
 
 ```{r}
@@ -125,27 +124,47 @@ model3 <- glm(DcStat ~ AGE + Ethnic + TBSA + Inhale,
               family = binomial)
 ```
 
-## Model Selection
+## Model Selection for Main Effect Model
 
 Model comparison was done comparing between model 1 with model 2 and 3, using LR test method. There was no significant difference between model 1 with model 2 and 3, hence the simplest model, model 3 was taken as preliminary final model.
 
 ```{r}
 anova(model1, model2, model3, test = "Chisq")
-PrelimFinalModel <- model3
+Burn_MainEffectModel <- model3
 ```
 
 ## Interaction
 
-Variable age and ethnicity shown significant interaction, as shown below.
+There are several interaction term between the variable, including 
+
+* age and ethnicity
+* age and inhalation injury
+* ethnicity and TBSA
+
+
+the significant interactions were shown below.
 
 ```{r}
 Model3_AgeEthnicInt <- glm(DcStat ~ AGE + Ethnic + TBSA + Inhale + AGE:Ethnic,
                            data = burnDS2,
                            family = binomial)
 tidy(Model3_AgeEthnicInt)
+Model3_AGEInhInt <- glm(DcStat ~ AGE + Ethnic + TBSA + Inhale + AGE:Inhale,
+              data = burnDS2,
+              family = binomial)
+tidy(Model3_AGEInhInt)
+
+Model3_EthnicTBSAInt <- glm(DcStat ~ AGE + Ethnic + TBSA + Inhale + Ethnic:TBSA,
+              data = burnDS2,
+              family = binomial)
+tidy(Model3_EthnicTBSAInt)
 ```
 
-no interaction between age & tbsa
+no interaction between 
+
+* age & tbsa
+* ethnic & inhale injury
+* tbsa & inhalation injury
 
 ```{r}
 Model3_AgeTBSAInt <- glm(DcStat ~ AGE + Ethnic + TBSA + Inhale + AGE:TBSA,
@@ -153,6 +172,59 @@ Model3_AgeTBSAInt <- glm(DcStat ~ AGE + Ethnic + TBSA + Inhale + AGE:TBSA,
               family = binomial)
 summary(Model3_AgeTBSAInt)
 
-Model3
+Model3_EthnicInhInt <- glm(DcStat ~ AGE + Ethnic + TBSA + Inhale + Ethnic:Inhale,
+              data = burnDS2,
+              family = binomial)
+summary(Model3_EthnicInhInt)
+
+Model3_TBSAInhInt <- glm(DcStat ~ AGE + Ethnic + TBSA + Inhale + TBSA:Inhale,
+              data = burnDS2,
+              family = binomial)
+summary(Model3_TBSAInhInt)
+```
+
+## Preliminary Final Model
+
+Since there were several interaction terms, the interaction terms were check for their effect toward the model. PrelimModel1 include all variables and interaction selected in main effect models, while PrelimModel2 include all variable in PrelimModel1, except for non-significant (at p < 0.05) interaction terms in PrelimModel1. Both PrelimModel1 and PrelimModel2 were compared.
+
+Since there were no significant different between PrelimModel1 and PrelimModel2, PrelimModel2 were selected for Final Model
+
+```{r}
+PrelimModel1 <- glm(DcStat ~ AGE + Ethnic + TBSA + Inhale + AGE:Ethnic + AGE:Inhale + Ethnic:TBSA,
+              data = burnDS2,
+              family = binomial)
+summary(PrelimModel1)
+
+PrelimModel2 <- glm(DcStat ~ AGE + Ethnic + TBSA + Inhale + AGE:Inhale,
+              data = burnDS2,
+              family = binomial)
+summary(PrelimModel2)
+
+anova(PrelimModel1, PrelimModel2, test = "Chisq")
+```
+
+## Model Assessment
+
+For Preliminary Final model, the variables included in the models are age, ethnicity, TBSA, Inhalation Injury and Age x Inhalation injury. Goodness of fit assessments were done to assess the Preliminary Final Model.
+
+```{r}
+Burn_PrelimFinalModel <- glm(DcStat ~ AGE + Ethnic + TBSA + Inhale + AGE:Inhale,
+              data = burnDS2,
+              family = binomial)
+```
+
+The model was considered fit, despite having significant Hosmer Lemeshow Test. The Area Under ROC curve was 96.8% (95% CI: 95.8%, 97.8%). Hosmer Lemeshow Test, the contingency table and ROC Curve Plot were shown below.
+
+
+```{r}
+hoslem.test(burnDS2$DcStat, fitted(Burn_PrelimFinalModel), g = 10)
+GOF_PrelimFinalModel <- gof(Burn_PrelimFinalModel, plotROC = T)
+GOF_PrelimFinalModel$ctHL
+```
+
+# Final Model
+
+```{r}
+Burn_FinalModel <- Burn_PrelimFinalModel
 ```
 

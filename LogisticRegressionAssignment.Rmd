@@ -1,9 +1,10 @@
 ---
 title: "Logistic Regression Assignment"
-author: "Author"
+author: "Mohd Azmi, Mohd Khairul Anwar, Muhamad Zikri, Muhd Firdaus"
 date: "07/12/2019"
 output:
   html_document:
+    number_sections: true
     toc: yes
     toc_float:
       collapsed: no
@@ -17,6 +18,10 @@ knitr::opts_chunk$set(echo = TRUE)
 # Introduction
 
 ## Research Problem
+
+The dataset is taken from National Burn Repository 2007 Report (Hosmer, 2013). In this study, they record the hospital discharge status, patient's gender, patient's ethnicity, total burn surface area, inhalation injury and flame involvement. 1000 data were collected (from total of 40,000 original data) in the dataset, BURN1000, which oversampled patient who died in hospital and under sampled subject who lived.
+
+In this study, we would like to ascertain factors associated with death upon discharge among the burn injury patient. 
 
 ## Packages
 
@@ -46,39 +51,74 @@ burnDS2 <- burnDS %>%
 ## Data Summary
 
 The median total burn surface area among the participant was 6% (IQR = 13.5%). Most of the participant was white ethnicity (n = 589)
+
 ```{r}
-summary(burnDS2$TBSA)
-summary(burnDS2$Ethnic)
+summary(burnDS2)
 ```
 
-The distribution of ethnicity and total burn surface area among participant, group by discharge stats was shown as below
+The distribution of ethnicity and total burn surface area among participant, group by discharge status was shown as below
 
-```{r}
+```{r, message=F}
+ggplot(burnDS2, aes(x=AGE)) + geom_histogram() + facet_wrap(~DcStat)
 ggplot(burnDS2, aes(x=TBSA)) + geom_histogram() + facet_wrap(~DcStat)
+
+ggplot(burnDS2, aes(x=Gender, fill=Gender)) + geom_bar() + facet_wrap(~DcStat)
 ggplot(burnDS2, aes(x=Ethnic, fill=Ethnic)) + geom_bar() + facet_wrap(~DcStat)
+ggplot(burnDS2, aes(x=Inhale, fill=Inhale)) + geom_bar() + facet_wrap(~DcStat)
+ggplot(burnDS2, aes(x=Flame, fill=Flame)) + geom_bar() + facet_wrap(~DcStat)
+
 ```
 
 # Univariable Analysis
 
-Univariable analysis with Simple Logistic Regression show TBSA were significant associated with discharge status at p < 0.05, while there was no significant associaiton between ethnicity and discharge status.
+Univariable analysis with Simple Logistic Regression show variable age at admission, % total burn surface area, inhalation injury and flame invovelment were significant associated with discharge status at p < 0.05, while there was no significant association between ethnicity and discharge status.
 
-The log odds of death upon discharge change by  0.09 (95% CI = 0.07, 0.10, p < 0.001) for each increament of 1% of total burnout score. As compared to Non-White, the odd ratio of death upon discharge among white ethnicity was 1.24 (95% CI = 0.87, 1.79, p = 0.232).
+For each increment of 1 year of age of admission, the log odds of death upon discharge change by 0.05 (95% CI = 0.04, 0.06, p < 0.01). For each increament of 1% of total burn surface area, the log odds of death upon discharge change by 0.09 (95% CI = 0.07, 0.10, p < 0.001). As compared to those without inhalation injury, the odd ratio of death upon discharge among those with inhalation injury 14.77 (95% CI = 9.66, 22.81, p < 0.001). As compared to those without flame invovlement, the odd ratio of death upon discharge among those = with flame involvement was 7.35 (95% CI = 4.61, 12.33, p < 0.01)
 
 The detail of univariable analysis is as below.
 
-```{r}
+
+```{r, message=F}
+SLogR_all <- burnDS2 %>%
+  dplyr::select(AGE, Gender, Ethnic, TBSA, Inhale, Flame) %>%
+  purrr::map(~glm(DcStat ~.x, data = burnDS2, family = binomial)) %>%
+  purrr::map(tidy) %>%
+  bind_rows()
+
+SLogR_all %>%
+  mutate(model = c("b0", "Age (year)", "b0", "Gender - Male", "b0", "Ethnic - White", "b0", "TBSA (%)",
+                   "b0", "Inhalation Injury - Yes", "b0", "Flame Invovlement - Yes")) %>%
+  dplyr::select(model, everything()) %>%
+  kable
+```
+
+
+```{r, message=F}
+SLogR_Age <- glm(DcStat ~ AGE, data = burnDS2, family = binomial)
+Table_SLogR_Age <- tidy(SLogR_Age)
+CI_SLogR_Age <- confint(SLogR_Age)
+OR_SLogR_Age <- exp(coef(SLogR_Age))
+ORCI_SLogR_Age <- exp(confint(SLogR_Age))
+kable(cbind(Table_SLogR_Age, CI_SLogR_Age, OR_SLogR_Age, ORCI_SLogR_Age))
+
 SLogR_TBSA <- glm(DcStat ~ TBSA, data = burnDS2, family = binomial)
 Table_SLogR_TBSA <- tidy(SLogR_TBSA)
 CI_SLogR_TBSA <- confint(SLogR_TBSA)
 OR_SLogR_TBSA <- exp(coef(SLogR_TBSA))
 ORCI_SLogR_TBSA <- exp(confint(SLogR_TBSA))
-cbind(Table_SLogR_TBSA, CI_SLogR_TBSA, OR_SLogR_TBSA, ORCI_SLogR_TBSA)
+kable(cbind(Table_SLogR_TBSA, CI_SLogR_TBSA, OR_SLogR_TBSA, ORCI_SLogR_TBSA))
 
-SLogR_Ethnic <- glm(DcStat ~ Ethnic, data = burnDS2, family = binomial)
-Table_SLogR_Ethnic <- tidy(SLogR_Ethnic)
-OR_SLogR_Ethnic <- exp(coef(SLogR_Ethnic))
-ORCI_SLogR_Ethnic <- exp(confint(SLogR_Ethnic))
-cbind(Table_SLogR_Ethnic, OR_SLogR_Ethnic, ORCI_SLogR_Ethnic)
+SLogR_Inhale <- glm(DcStat ~ Inhale, data = burnDS2, family = binomial)
+Table_SLogR_Inhale <- tidy(SLogR_Inhale)
+OR_SLogR_Inhale <- exp(coef(SLogR_Inhale))
+ORCI_SLogR_Inhale <- exp(confint(SLogR_Inhale))
+kable(cbind(Table_SLogR_Inhale, OR_SLogR_Inhale, ORCI_SLogR_Inhale))
+
+SLogR_Flame <- glm(DcStat ~ Flame, data = burnDS2, family = binomial)
+Table_SLogR_Flame <- tidy(SLogR_Flame)
+OR_SLogR_Flame <- exp(coef(SLogR_Flame))
+ORCI_SLogR_Flame <- exp(confint(SLogR_Flame))
+kable(cbind(Table_SLogR_Flame, OR_SLogR_Flame, ORCI_SLogR_Flame))
 ```
 
 
@@ -86,16 +126,147 @@ cbind(Table_SLogR_Ethnic, OR_SLogR_Ethnic, ORCI_SLogR_Ethnic)
 
 ## Preliminary Main Effect Models
 
+Several Preliminary Main Effect Models were formed. 
+
+For Preliminary Main Effect Model 1, all variables were selected. Multivariable analysis with multiple logistic regression show that all variable except variables for gender and flame involvement were significant.
+
+```{r}
+PMEM1 <- glm(DcStat ~ AGE + Gender + Ethnic + TBSA + Inhale + Flame, data=burnDS2, family = binomial)
+kable(tidy(PMEM1))
+```
+
+All significant variables (at p < 0.05) in univariable analysis were selected for preliminary main effect model2 (i.e variable gender and ethnic were removed). Multivariable analysis with multiple logistic regression show that variable age, total burn surface area and inhalation injury involvement were significant.
+
+```{r}
+PMEM2 <- glm(DcStat ~ AGE + TBSA + Inhale + Flame, data=burnDS2, family = binomial)
+kable(tidy(PMEM2))
+```
+
+For Preliminary Main Effect Model 3, variable flame involvement was removed. Multivariable analysis with multiple logistic regression show that age, total burn surface area and inhalation injury were significant with death upon discharge status.
+
+```{r}
+PMEM3 <- glm(DcStat ~ AGE + TBSA + Inhale, data=burnDS2, family = binomial)
+kable(tidy(PMEM3))
+```
+
 ### Model Selection
+
+All preliminary main effect models were compared. There was significant different between Preliminary Main Effect Model 1 and 2, thus Preliminary Main Effect Model 1 were selected because the variables removed in model 2 have effect on the model. There was no significant difference between Model 1 and Model 3, thus model 3 was selected, because it is more parsimonous.
+
+```{r}
+anova(PMEM1, PMEM2, test = "Chisq")
+anova(PMEM1, PMEM3, test = "Chisq")
+```
 
 ## Main Effect Model
 
+Variables selected for main effect model were age, total burn surface area and inhalation injury.
+
+```{r}
+MainEffectModel <- PMEM3
+```
+
+
 ## Interaction
 
-## Model Selection
+All possible interaction between independent variable were tested.
+
+
+### Age and TBSA interaction
+
+no significant interaction term between age and tbsa
+
+```{r}
+MEM_AgeTBSAInt <- glm(DcStat ~ AGE + TBSA + Inhale + AGE:TBSA, data=burnDS2, family = binomial)
+kable(tidy(MEM_AgeTBSAInt))
+```
+
+### Age and Inhale
+
+there was significant interaction term between age and inhale
+```{r}
+MEM_AgeInhInt <- glm(DcStat ~ AGE + TBSA + Inhale + AGE:Inhale, data=burnDS2, family = binomial)
+kable(tidy(MEM_AgeInhInt))
+```
+
+### TBSA and Inhale
+
+There was no significant interaction between TBSA and inhale
+```{r}
+MEM_TBSAInhInt <- glm(DcStat ~ AGE + TBSA + Inhale + TBSA:Inhale, data=burnDS2, family = binomial)
+kable(tidy(MEM_TBSAInhInt))
+```
+
 
 ## Preliminary Final Model
 
+Interaction term between age and inhalation was included in preliminary final model
+
+```{r}
+PrelimFinalModel <- MEM_AgeInhInt
+```
+
 ## Final Model Assessment
 
+Despite having significant Hosmer Lemeshow Test, the model considered fit with area under ROC curve was 96.7% (95% CI = 95.6%, 97.7%).
+
+```{r, warning=F}
+kable(tidy(hoslem.test(burnDS2$DcStat, fitted(PrelimFinalModel), g=10)))
+```
+
+the ROC curve was shown below
+
+```{r, message=F}
+PFM_GOF <- gof(PrelimFinalModel)
+```
+
+Thus, our final model include variable age, tbsa, inhalation injury and one interaction term of age by inhalation
+
+```{r}
+FinalModel <- PrelimFinalModel
+kable(tidy(FinalModel))
+```
+
+
+# Prediction
+
+We want to predict the probability of death upon discharge for these parameter
+
+- age: 10 & 50 years old
+- tbsa: 2.5% & 16.0%
+- inhalataion injury status: yes, no
+
+Based on our model, for those age 10 years old, and TBSA of 2.5% without inhalation injury, the probability of death upon discharge are < 0.001, while for those with age 50 years old, with TBSA of 16.0% and with inhalation injury, the probability of death upon discharge are 0.303. The detail of prediction of death upon discharge for other combination of the age listed above were shown below.
+
+```{r}
+NewDS <- expand.grid(AGE = c(10, 50),
+                     TBSA = c(2.5, 16),
+                     Inhale = c("No", "Yes"))
+
+PredProb_NewDS <- predict(FinalModel, newdata = NewDS, type = "response")
+kable(cbind(PredProb_NewDS, NewDS))
+```
+
+
 # Discussion
+
+in this study, four factors that have significant association with discharge status, including age at admission, total surface burn area, inhalataion injury and flame involvement. However, when adjusted, only age, total surface burn area and inhalation injury were significant.
+
+From this study, it is shown that increase age, increase total surface burn area and presence of inhalation injury increase the odd of death upon discharge.
+
+The final model can be expressed as
+
+y = - 9.05 + 0.10 (Age) + 0.08 (TBSA) + 4.49 (Inhalation Injury - Yes) - 0.06 (Age * Inhalation Injury). 
+
+The model was deemed fit. Significant Hosmer Lemeshow most probably due to large sample size.
+
+
+
+
+
+
+
+
+
+
+

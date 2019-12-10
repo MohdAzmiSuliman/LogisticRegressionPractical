@@ -1,0 +1,101 @@
+---
+title: "Logistic Regression Assignment"
+author: "Author"
+date: "07/12/2019"
+output:
+  html_document:
+    toc: yes
+    toc_float:
+      collapsed: no
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Introduction
+
+## Research Problem
+
+## Packages
+
+```{r}
+library(pacman)
+p_load(dplyr, psych, knitr, ggplot2, broom, LogisticDx, generalhoslem, ResourceSelection)
+```
+
+
+## Data
+
+```{r}
+burnDS <- read.delim("BURN1000.txt", header = TRUE, sep = "\t", dec = ".")
+
+burnDS2 <- burnDS %>%
+  mutate(DcStat = factor(DEATH, labels = c("Alive", "Death")),
+         Gender = factor(GENDER, labels = c("Female", "Male")),
+         Ethnic = factor(RACEC, labels = c("Non-white", "White")),
+         Inhale = factor(INH_INJ, labels = c("No", "Yes")),
+         Flame = factor(FLAME, labels = c("No", "Yes"))) %>%
+  dplyr::select(DcStat, AGE, Gender, Ethnic, TBSA, Inhale, Flame)
+```
+
+
+# Descriptive Analysis
+
+## Data Summary
+
+The median total burn surface area among the participant was 6% (IQR = 13.5%). Most of the participant was white ethnicity (n = 589)
+```{r}
+summary(burnDS2$TBSA)
+summary(burnDS2$Ethnic)
+```
+
+The distribution of ethnicity and total burn surface area among participant, group by discharge stats was shown as below
+
+```{r}
+ggplot(burnDS2, aes(x=TBSA)) + geom_histogram() + facet_wrap(~DcStat)
+ggplot(burnDS2, aes(x=Ethnic, fill=Ethnic)) + geom_bar() + facet_wrap(~DcStat)
+```
+
+# Univariable Analysis
+
+Univariable analysis with Simple Logistic Regression show TBSA were significant associated with discharge status at p < 0.05, while there was no significant associaiton between ethnicity and discharge status.
+
+The log odds of death upon discharge change by  0.09 (95% CI = 0.07, 0.10, p < 0.001) for each increament of 1% of total burnout score. As compared to Non-White, the odd ratio of death upon discharge among white ethnicity was 1.24 (95% CI = 0.87, 1.79, p = 0.232).
+
+The detail of univariable analysis is as below.
+
+```{r}
+SLogR_TBSA <- glm(DcStat ~ TBSA, data = burnDS2, family = binomial)
+Table_SLogR_TBSA <- tidy(SLogR_TBSA)
+CI_SLogR_TBSA <- confint(SLogR_TBSA)
+OR_SLogR_TBSA <- exp(coef(SLogR_TBSA))
+ORCI_SLogR_TBSA <- exp(confint(SLogR_TBSA))
+cbind(Table_SLogR_TBSA, CI_SLogR_TBSA, OR_SLogR_TBSA, ORCI_SLogR_TBSA)
+
+SLogR_Ethnic <- glm(DcStat ~ Ethnic, data = burnDS2, family = binomial)
+Table_SLogR_Ethnic <- tidy(SLogR_Ethnic)
+OR_SLogR_Ethnic <- exp(coef(SLogR_Ethnic))
+ORCI_SLogR_Ethnic <- exp(confint(SLogR_Ethnic))
+cbind(Table_SLogR_Ethnic, OR_SLogR_Ethnic, ORCI_SLogR_Ethnic)
+```
+
+
+# Multivariable Analysis
+
+## Preliminary Main Effect Models
+
+### Model Selection
+
+## Main Effect Model
+
+## Interaction
+
+## Model Selection
+
+## Preliminary Final Model
+
+## Final Model Assessment
+
+# Discussion

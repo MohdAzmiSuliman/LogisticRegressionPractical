@@ -19,7 +19,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Research Problem
 
-The dataset is taken from National Burn Repository 2007 Report (Hosmer, 2013). In this study, they record the hospital discharge status, patient's gender, patient's ethnicity, total burn surface area, inhalation injury and flame involvement. 1000 data were collected (from total of 40,000 original data) in the dataset, BURN1000, which oversampled patient who died in hospital and under sampled subject who lived.
+The dataset is taken from National Burn Repository 2007 Report (Hosmer, 2013). In this study, they record the hospital discharge status, patient's gender, patient's ethnicity, total burn surface area, inhalation injury and flame involvement. 1,000 data were collected (from total of 40,000 original data) in the dataset, BURN1000, which oversampled patient who died in hospital and undersampled subject who lived.
 
 In this study, we would like to ascertain factors associated with death upon discharge among the burn injury patient. 
 
@@ -50,13 +50,13 @@ burnDS2 <- burnDS %>%
 
 ## Data Summary
 
-The median total burn surface area among the participant was 6% (IQR = 13.5%). Most of the participant was white ethnicity (n = 589)
+The median age of the participant was 31.95 years old (IQR = 49.38), while the median total burn surface area among the participant was 6% (IQR = 13.5%). Most of the participant was male (n = 705), white ethnicity (n = 589), had no inhalation injury (n = 878) and had flame involvement (n = 529)
 
 ```{r}
 summary(burnDS2)
 ```
 
-The distribution of ethnicity and total burn surface area among participant, group by discharge status was shown as below
+The distribution of each variable, grouped by discharge status, shown as below
 
 ```{r, message=F}
 ggplot(burnDS2, aes(x=AGE)) + geom_histogram() + facet_wrap(~DcStat)
@@ -71,11 +71,11 @@ ggplot(burnDS2, aes(x=Flame, fill=Flame)) + geom_bar() + facet_wrap(~DcStat)
 
 # Univariable Analysis
 
-Univariable analysis with Simple Logistic Regression show variable age at admission, % total burn surface area, inhalation injury and flame invovelment were significant associated with discharge status at p < 0.05, while there was no significant association between ethnicity and discharge status.
+Univariable analysis with Simple Logistic Regression show variable age at admission, % total burn surface area, inhalation injury and flame involvement were significant associated with discharge status at p < 0.05, while there was no significant association between ethnicity and discharge status.
 
 For each increment of 1 year of age of admission, the log odds of death upon discharge change by 0.05 (95% CI = 0.04, 0.06, p < 0.01). For each increament of 1% of total burn surface area, the log odds of death upon discharge change by 0.09 (95% CI = 0.07, 0.10, p < 0.001). As compared to those without inhalation injury, the odd ratio of death upon discharge among those with inhalation injury 14.77 (95% CI = 9.66, 22.81, p < 0.001). As compared to those without flame invovlement, the odd ratio of death upon discharge among those = with flame involvement was 7.35 (95% CI = 4.61, 12.33, p < 0.01)
 
-The detail of univariable analysis is as below.
+The detail of univariable analysis was as below.
 
 
 ```{r, message=F}
@@ -86,8 +86,7 @@ SLogR_all <- burnDS2 %>%
   bind_rows()
 
 SLogR_all %>%
-  mutate(model = c("b0", "Age (year)", "b0", "Gender - Male", "b0", "Ethnic - White", "b0", "TBSA (%)",
-                   "b0", "Inhalation Injury - Yes", "b0", "Flame Invovlement - Yes")) %>%
+  mutate(model = c("b0", "Age (year)", "b0", "Gender - Male", "b0", "Ethnic - White", "b0", "TBSA (%)", "b0", "Inhalation Injury - Yes", "b0", "Flame Invovlement - Yes")) %>%
   dplyr::select(model, everything()) %>%
   kable
 ```
@@ -174,7 +173,7 @@ All possible interaction between independent variable were tested.
 
 ### Age and TBSA interaction
 
-no significant interaction term between age and tbsa
+There was no significant interaction term between age on admission and total burn surface area.
 
 ```{r}
 MEM_AgeTBSAInt <- glm(DcStat ~ AGE + TBSA + Inhale + AGE:TBSA, data=burnDS2, family = binomial)
@@ -183,7 +182,8 @@ kable(tidy(MEM_AgeTBSAInt))
 
 ### Age and Inhale
 
-there was significant interaction term between age and inhale
+There was significant interaction term between age on admission and inhalation injury.
+
 ```{r}
 MEM_AgeInhInt <- glm(DcStat ~ AGE + TBSA + Inhale + AGE:Inhale, data=burnDS2, family = binomial)
 kable(tidy(MEM_AgeInhInt))
@@ -191,7 +191,8 @@ kable(tidy(MEM_AgeInhInt))
 
 ### TBSA and Inhale
 
-There was no significant interaction between TBSA and inhale
+There was no significant interaction between Total Burn Surface Area and inhalation injury.
+
 ```{r}
 MEM_TBSAInhInt <- glm(DcStat ~ AGE + TBSA + Inhale + TBSA:Inhale, data=burnDS2, family = binomial)
 kable(tidy(MEM_TBSAInhInt))
@@ -200,7 +201,7 @@ kable(tidy(MEM_TBSAInhInt))
 
 ## Preliminary Final Model
 
-Interaction term between age and inhalation was included in preliminary final model
+Interaction term between age and inhalation was included in preliminary final model.
 
 ```{r}
 PrelimFinalModel <- MEM_AgeInhInt
@@ -208,7 +209,7 @@ PrelimFinalModel <- MEM_AgeInhInt
 
 ## Final Model Assessment
 
-Despite having significant Hosmer Lemeshow Test, the model considered fit with area under ROC curve was 96.7% (95% CI = 95.6%, 97.7%).
+Despite having significant Hosmer Lemeshow Test, the model considered fit with area under ROC curve was 96.7% (95% CI = 95.6%, 97.7%). 
 
 ```{r, warning=F}
 kable(tidy(hoslem.test(burnDS2$DcStat, fitted(PrelimFinalModel), g=10)))
@@ -220,11 +221,21 @@ the ROC curve was shown below
 PFM_GOF <- gof(PrelimFinalModel)
 ```
 
-Thus, our final model include variable age, tbsa, inhalation injury and one interaction term of age by inhalation
+## Final Model
 
-```{r}
-FinalModel <- PrelimFinalModel
-kable(tidy(FinalModel))
+Thus, our final model include variable age, tbsa, inhalation injury and one interaction term of age by inhalation.
+
+For each increment of 1 year of age of admission, the log odds of death upon discharge change by 0.10 (95% CI = 0.08, 0.13, p < 0.001), when adjusted to total surface burn area, inhalation injury and interaction term of age by inhalation injury. For each increment of 1% of total surface burn area, the log odds of death upon discharge change by 0.08 (95% CI = 0.07, 0.10, p < 0.001), when adjusted to age on admission, inhalation injury and interaction term of age by inhalation injury. As compared to those without inhalation injury, the odd ratio of death upon discharge among those with inhalation injury was 89.46 (95% CI = 16.26, 520.84), when adjusted to age on admission, total burn surface area and interaction term of age by inhalation injury. 
+
+The detail of multiple logistic regresson was shown below.
+
+```{r, message=F}
+FinalModel <- glm(DcStat ~ AGE + TBSA + Inhale + AGE:Inhale, data=burnDS2, family = binomial)
+Table_FinalModel <- tidy(FinalModel)
+CI_FinalModel <- confint(FinalModel)
+OR_FinalModel <- exp(coef(FinalModel))
+ORCI_FinalModel <- exp(confint(FinalModel))
+kable(cbind(Table_FinalModel, CI_FinalModel, OR_FinalModel, ORCI_FinalModel))
 ```
 
 
@@ -236,7 +247,7 @@ We want to predict the probability of death upon discharge for these parameter
 - tbsa: 2.5% & 16.0%
 - inhalataion injury status: yes, no
 
-Based on our model, for those age 10 years old, and TBSA of 2.5% without inhalation injury, the probability of death upon discharge are < 0.001, while for those with age 50 years old, with TBSA of 16.0% and with inhalation injury, the probability of death upon discharge are 0.303. The detail of prediction of death upon discharge for other combination of the age listed above were shown below.
+Based on our model, for those age 10 years old and TBSA of 2.5% without inhalation injury, the probability of death upon discharge are < 0.001, while for those with age 50 years old, with TBSA of 16.0% and with inhalation injury, the probability of death upon discharge are 0.303. The detail of prediction of death upon discharge for other combination of the age listed above were shown below.
 
 ```{r}
 NewDS <- expand.grid(AGE = c(10, 50),
@@ -260,6 +271,9 @@ y = - 9.05 + 0.10 (Age) + 0.08 (TBSA) + 4.49 (Inhalation Injury - Yes) - 0.06 (A
 
 The model was deemed fit. Significant Hosmer Lemeshow most probably due to large sample size.
 
+# Reference
+
+Hosmer, D., Lemeshow, S. & Sturdivant, R. (2013). Applied logistic regression. Hoboken, New Jersey: Wiley.
 
 
 
